@@ -12,17 +12,10 @@
     <title>Index</title>
 </head>
 <body>
+    @Html.Partial("NavigationBar")
     <h1 style="text-align: center;">Admin Panel</h1>
-    <p>Logged in as: @Model.FirstName @Model.LastName</p>
-    <table style="border-collapse: collapse; width: 100%;" border="1">
-        <tbody>
-            <tr>
-                <td style="width: 25.00%; text-align: center;"><a href="~/Admin/ManageProducts">Manage Products</a> / <a href="~/Admin/AddProduct">Add Product</a></td>
-                <td style="width: 25.00%; text-align: center;"><a href="~/Admin/ManageOrders">Manage Orders</a></td>
-                <td style="width: 25.00%; text-align: center;"><a href="~/Admin/ManageSeats">Manage Seats</a></td>
-                <td style="width: 25.00%; text-align: center;"><a href="~/Admin/ManageMenus">Manage Menus</a> / <a href="~/Admin/AddMenu">Add Menu</a></td>
-            </tr>
-        </tbody>
-    </table>
+    <center>
+        <p>Logged in as: @Model.FirstName @Model.LastName</p>
+    </center>
 </body>
 </html>

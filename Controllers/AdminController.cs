@@ -50,6 +50,7 @@ namespace CoffeeShop.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [HttpPost]
         public ActionResult SubmitProductModification(Products form_data)
         {
             if (this.isLoggenIn() && this.isAdmin())
@@ -66,6 +67,7 @@ namespace CoffeeShop.Controllers
                     db_product.Price = form_data.Price;
                     db_product.DiscountedPrice = form_data.DiscountedPrice;
                     db_product.Rank = form_data.Rank;
+                    db_product.Category = form_data.Category;
                     dal.SaveChanges();
                     return RedirectToAction("ManageProducts", "Admin");
                 }
@@ -85,6 +87,7 @@ namespace CoffeeShop.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [HttpPost]
         public ActionResult SubmitNewProduct(Products form_data)
         {
             if (this.isLoggenIn() && this.isAdmin())
@@ -164,6 +167,7 @@ namespace CoffeeShop.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [HttpPost]
         public ActionResult SubmitOrderModification(AdminOrdersSectionViewModel form_data)
         {
             if (this.isLoggenIn() && this.isAdmin())
@@ -253,6 +257,7 @@ namespace CoffeeShop.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [HttpPost]
         public ActionResult SubmitMenuModification(AdminMenusSectionViewModel form_data, FormCollection form_collection)
         {
             if (this.isLoggenIn() && this.isAdmin())
@@ -345,7 +350,7 @@ namespace CoffeeShop.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-
+        [HttpPost]
         public ActionResult SubmitNewMenu(AdminMenusSectionViewModel form_data, FormCollection form_collection)
         {
             if (this.isLoggenIn() && this.isAdmin())
@@ -360,7 +365,7 @@ namespace CoffeeShop.Controllers
                     new_menu.Location = form_data.Menu.Location;
 
                     // if menu chosen to listed as main menu (Currently Listed) then make all other menus as not listed.
-                    if (form_data.Menu.Listed== true)
+                    if (form_data.Menu.Listed == true)
                     {
                         foreach (Menu menu in m_dal.dalMenu.ToList())
                             menu.Listed = false;
@@ -414,21 +419,71 @@ namespace CoffeeShop.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public ActionResult ManageSeats()
+        public ActionResult ManageUsers()
         {
             if (this.isLoggenIn() && this.isAdmin())
             {
-                SeatsDal dal = new SeatsDal();
-                SeatsViewModel s_vm = new SeatsViewModel();
+                UsersDal u_dal = new UsersDal();
+                UsersViewModel u_vm = new UsersViewModel();
 
-                s_vm.vmSeats = (from val in dal.dalSeats select val).ToList<Seats>();
-                return View("ManageSeats", s_vm);
+                u_vm.vmUsers = (from val in u_dal.dalUsers select val).ToList<Users>();
+                return View("ManageUsers", u_vm);
             }
             return RedirectToAction("Index", "Home");
         }
 
 
+        public ActionResult ModifyUser(int id)
+        {
+            if (this.isLoggenIn() && this.isAdmin())
+            {
+                UsersDal u_dal = new UsersDal();
+                Users user = u_dal.dalUsers.Where(m => m.Id == id).First();
+                View("ModifyUser", user);
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
         [HttpPost]
+        public ActionResult SubmitModifyUser(Users form_data)
+        {
+            if (this.isLoggenIn() && this.isAdmin())
+            {
+                if (ModelState.IsValid)
+                {
+                    UsersDal dal = new UsersDal();
+                    Users db_user = dal.dalUsers.Where(m => m.Id == form_data.Id).First();
+                    db_user.Username = form_data.Username;
+                    db_user.Email = form_data.Email;
+                    db_user.Password = form_data.Password;
+                    db_user.Age = form_data.Age;
+                    db_user.VIP = form_data.VIP;
+                    db_user.VIPNumber = form_data.VIPNumber;
+                    dal.SaveChanges();
+                    return RedirectToAction("Login", "Home");
+                }
+                else
+                {
+                    ViewBag.Message = "The information given is invalid!";
+                    return View("UpdateDetails", form_data);
+                }
+            }
+            return RedirectToAction("Login", "Home");
+        }
+
+        public ActionResult ManageSeats()
+        {
+            if (this.isLoggenIn() && this.isAdmin())
+            {
+                SeatsDal s_dal = new SeatsDal();
+                SeatsViewModel s_vm = new SeatsViewModel();
+
+                s_vm.vmSeats = (from val in s_dal.dalSeats select val).ToList<Seats>();
+                return View("ManageSeats", s_vm);
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
         public ActionResult SubmitSeats(SeatsViewModel s_vm)
         {
             if (this.isLoggenIn() && this.isAdmin())
@@ -452,6 +507,50 @@ namespace CoffeeShop.Controllers
                 {
                     ViewBag.Message = "The information given is invalid!";
                     return View("ManageSeats", s_vm);
+                }
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        public ActionResult ManageTablesAvailability()
+        {
+            if (this.isLoggenIn() && this.isAdmin())
+            {
+                TablesAvailabilityDal ta_dal = new TablesAvailabilityDal();
+                TablesAvailabilityViewModel ta_vm = new TablesAvailabilityViewModel();
+                ta_vm.vmTablesAvailability = ta_dal.dalTablesAvailability.ToList();
+                return View("ManageTablesAvailability", ta_vm);
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        public ActionResult SubmitTablesAvailabilityModification(TablesAvailabilityViewModel ta_vm)
+        {
+            if (this.isLoggenIn() && this.isAdmin())
+            {
+                if (ModelState.IsValid)
+                {
+                    TablesAvailabilityDal ta_dal = new TablesAvailabilityDal();
+                    for (int i = 0; i < ta_dal.dalTablesAvailability.Count(); i++)
+                    {
+                        int table_n = ta_vm.vmTablesAvailability[i].Id;
+                        ta_dal.dalTablesAvailability.Where(m => m.Id == table_n).First().Sunday = ta_vm.vmTablesAvailability[i].Sunday;
+                        ta_dal.dalTablesAvailability.Where(m => m.Id == table_n).First().Monday = ta_vm.vmTablesAvailability[i].Monday;
+                        ta_dal.dalTablesAvailability.Where(m => m.Id == table_n).First().Tuesday = ta_vm.vmTablesAvailability[i].Tuesday;
+                        ta_dal.dalTablesAvailability.Where(m => m.Id == table_n).First().Wednesday = ta_vm.vmTablesAvailability[i].Wednesday;
+                        ta_dal.dalTablesAvailability.Where(m => m.Id == table_n).First().Thursday = ta_vm.vmTablesAvailability[i].Thursday;
+                        ta_dal.dalTablesAvailability.Where(m => m.Id == table_n).First().Friday = ta_vm.vmTablesAvailability[i].Friday;
+                        ta_dal.dalTablesAvailability.Where(m => m.Id == table_n).First().Saturday = ta_vm.vmTablesAvailability[i].Saturday;
+                    }
+                    ta_dal.SaveChanges();
+                    TempData["Message"] = "Tables Modification Saved Successfully!";
+                    return RedirectToAction("ManageTablesAvailability", "Admin", ViewBag.Message);
+                }
+                else
+                {
+                    ViewBag.Message = "The information given is invalid!";
+                    return View("ManageTablesAvailability", ta_vm);
                 }
             }
             return RedirectToAction("Index", "Home");

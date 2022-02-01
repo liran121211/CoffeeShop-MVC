@@ -1,0 +1,147 @@
+﻿@model CoffeeShop.ViewModel.MakeOrderViewModel
+@using CoffeeShop.Models
+
+@{
+    Layout = null;
+}
+
+@functions {
+    private String CreateTransactionIdentifier()
+    {
+        var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        var stringChars = new char[8];
+        var random = new Random();
+
+        for (int i = 0; i < stringChars.Length; i++)
+        {
+            stringChars[i] = chars[random.Next(chars.Length)];
+        }
+
+        var finalString = new String(stringChars);
+        return finalString;
+    }
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OrderStep7</title>
+</head>
+<body>
+    @Html.Partial("NavigationBar")
+    <script>
+        // Set the date we're counting down to
+        var countDownDate = new Date(new Date().getTime() + 60000 * @Model.OrderTimeInterval);
+
+        // Update the count down every 1 second
+        var x = setInterval(function () {
+
+            // Get today's date and time
+            var now = new Date().getTime();
+
+            // Find the distance between now and the count down date
+            var distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Output the result in an element with id="demo"
+            document.getElementById("order_timer").innerHTML = minutes + "m " + seconds + "s ";
+
+            // If the count down is over, write some text
+            if (distance < 0) {
+                clearInterval(x);
+                @{ TempData["OrderExpired"] = "Order expired, Please try again..."; }
+                window.location.href = "@Url.Action("OrderStep1", "Home")";
+            }
+        }, 1000);
+    </script>
+    <center style="color:orangered; font-size:25px; font-weight:bold">This Order Will Expire In: <b id="order_timer"></b></center>
+
+
+    <div>
+        <h1 style="text-align: center;">Order Summary</h1>
+        <center>
+            @using (Html.BeginForm("SubmitOrderStep7", "Home", FormMethod.Post))
+            {
+                String transaction_id = CreateTransactionIdentifier();
+                @Html.HiddenFor(m => m.CurrentDate)
+                @Html.HiddenFor(m => m.Location)
+                @Html.HiddenFor(m => m.Category)
+                @Html.HiddenFor(m => m.TotalOrder)
+                @Html.HiddenFor(m => m.OrderTimeInterval)
+                TempData["AvailableMenus"] = Model.AvailableMenus;
+                TempData["AvailableProducts"] = Model.AvailableProducts;
+                TempData["MaxPricePerProduct"] = Model.MaxPricePerProduct;
+                TempData["LoggedInUser"] = Model.LoggedInUser;
+                TempData["SelectedMenu"] = Model.SelectedMenu;
+                TempData["SelectedProducts"] = Model.SelectedProducts;
+                TempData["AvailableSeats"] = Model.AvailableSeats;
+                TempData["SelectedSeats"] = Model.SelectedSeats;
+                TempData["TransactionIdentifier"] = transaction_id;
+                TempData["OrderTimer"] = Model.OrderTimer;
+
+                <table style="border-collapse: collapse; width: 300px; height: 64px;" border="1">
+                    <tbody>
+                        <tr>
+                            <td style="width: 100%; text-align: center;"><strong><u>Order No:</u></strong> #@transaction_id</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 100%; text-align: left;">
+                                <p><strong><u>Order Date:</u></strong> @Model.CurrentDate</p>
+                                <p><strong><u>Full Name:</u></strong> @Model.LoggedInUser.FirstName @Model.LoggedInUser.LastName</p>
+                                <p>
+                                    <strong><u>Preferred Location:</u></strong>
+                                    @if (Model.Location.ToString().CompareTo("ALL_SEATS") == 0)
+                                    {
+                                        @:All Seats
+                                    }
+                                    else
+                                    {
+                                        @Model.Location
+                                    }
+                                </p>
+                                <p>
+                                    <strong><u>Preferred Category:</u></strong>
+                                    @if (Model.Category.ToString().CompareTo("ALL_CATEGORIES") == 0)
+                                    {
+                                        @:All Categories
+                                    }
+                                    else
+                                    {
+                                        @Model.Category
+                                    }
+                                </p>
+                                <p><strong><u>Menu Chosen:</u></strong> @Model.SelectedMenu.Name</p>
+                                <p><strong><u>Products:</u></strong></p>
+                                <ul style="list-style-type: disc;">
+                                    @for (int i = 0; i < Model.SelectedProducts.Count; i++)
+                                    {
+                                        {
+                                            double total_product_price = Model.SelectedProducts[i].Item2 * @Model.SelectedProducts[i].Item1.Price;
+                                            <li>@Model.SelectedProducts[i].Item1.Name (@Model.SelectedProducts[i].Item2) @total_product_price ILS </li>
+                                        }
+                                    }
+                                </ul>
+                                <p><strong><u>Seats:</u></strong></p>
+                                <ul style="list-style-type: disc;">
+                                    @for (int i = 0; i < Model.SelectedSeats.Count; i++)
+                                    {
+                                        <li>Row: #@{ int row = Model.SelectedSeats[i].Item1 + 1; } @row Seat: #@Model.SelectedSeats[i].Item2</li>
+                                    }
+                                </ul>
+                                <p><strong><u>Total Order:</u></strong> @Model.TotalOrder ILS</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                TempData["OrderData"] = Model;
+                <p><input type="button" value="Go Back" onclick="location.href='@Url.Action("OrderStepBack", "Home", Model)'" /> <input type="submit" value="Confirm" /></p>
+            }
+        </center>
+    </div>
+</body>
+</html>

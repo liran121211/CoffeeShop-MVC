@@ -14,81 +14,82 @@
     <title>Modify Order</title>
 </head>
 <body>
+    @Html.Partial("NavigationBar")
     <center>
         @using (Html.BeginForm("SubmitMenuModification", "Admin", FormMethod.Post))
         {
             @Html.HiddenFor(m => m.Menu.Id)
-        <table cellpadding="0" cellspacing="5">
-            <tr>
-                <th colspan="2" align="center">Modify Menu</th>
-            </tr>
-            <tr>
-                <td>Name: </td>
-                <td>
-                    @Html.TextBoxFor(m => m.Menu.Name)
-                </td>
-            </tr>
-            <tr>
-                <td>Category: </td>
-                <td>
-                    @Html.DropDownListFor(m => m.Menu.Category, new SelectList(Enum.GetValues(typeof(MenuCategory))), "Select an Option")
-                </td>
-            </tr>
-            <tr>
-                <td>Location: </td>
-                <td>
-                    @Html.DropDownListFor(m => m.Menu.Location, new SelectList(Enum.GetValues(typeof(Location))), "Select an Option")
-                </td>
-            </tr>
-            <tr>
-                <td>Time: </td>
-                <td>
-                    @Html.TextBoxFor(m => m.Menu.Time)
-                </td>
-            </tr>
-            <tr>
-                <td>Currently Listed? </td>
-                <td>
-                    @if (Model.Menu.Listed == true)
-                    {
-                        @Html.CheckBoxFor(m => m.Menu.Listed, new { disabled = "disabled" })
-                    }
-                    else
-                    {
-                        @Html.CheckBoxFor(m => m.Menu.Listed)
-                    }
-                </td>
-            </tr>
-            @for (int i = 0; i < Model.All_products.Count; i++)
-            {
-                bool isChecked = false;
+            <table cellpadding="0" cellspacing="5">
                 <tr>
-                    <td>@Model.All_products[i].Name </td>
+                    <th colspan="2" align="center">Modify Menu</th>
+                </tr>
+                <tr>
+                    <td>Name: </td>
                     <td>
-                        @for (int j = 0; j < Model.Current_products.Count; j++)
+                        @Html.TextBoxFor(m => m.Menu.Name)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Category: </td>
+                    <td>
+                        @Html.DropDownListFor(m => m.Menu.Category, new SelectList(Enum.GetValues(typeof(MenuCategory))), "Select an Option")
+                    </td>
+                </tr>
+                <tr>
+                    <td>Location: </td>
+                    <td>
+                        @Html.DropDownListFor(m => m.Menu.Location, new SelectList(Enum.GetValues(typeof(Location))), "Select an Option")
+                    </td>
+                </tr>
+                <tr>
+                    <td>Time: </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.Menu.Time)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Currently Listed? </td>
+                    <td>
+                        @if (Model.Menu.Listed == true)
                         {
-                            if (Model.All_products[i] == Model.Current_products[j])
-                            {
-                                isChecked = true;
-                            }
-                        }
-                        @if (isChecked)
-                        {
-                            @Html.CheckBox(name: @Model.All_products[i].Id.ToString(), isChecked: true);
+                            @Html.CheckBoxFor(m => m.Menu.Listed, new { disabled = "disabled" })
                         }
                         else
                         {
-                            @Html.CheckBox(name: @Model.All_products[i].Id.ToString(), isChecked: false);
+                            @Html.CheckBoxFor(m => m.Menu.Listed)
                         }
-
                     </td>
                 </tr>
-            }
-            <tr>
-                <td></td>
-                <td><input type="submit" value="Save Changes" /></td>
-            </tr>
-        </table>
+                @for (int i = 0; i < Model.All_products.Count; i++)
+                {
+                    bool isChecked = false;
+                    <tr>
+                        <td>@Model.All_products[i].Name </td>
+                        <td>
+                            @for (int j = 0; j < Model.Current_products.Count; j++)
+                            {
+                                if (Model.All_products[i] == Model.Current_products[j])
+                                {
+                                    isChecked = true;
+                                }
+                            }
+                            @if (isChecked)
+                            {
+                                @Html.CheckBox(name: @Model.All_products[i].Id.ToString(), isChecked: true);
+                            }
+                            else
+                            {
+                                @Html.CheckBox(name: @Model.All_products[i].Id.ToString(), isChecked: false);
+                            }
+
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td></td>
+                    <td><input type="submit" value="Save Changes" /></td>
+                </tr>
+            </table>
         }
     </center>
 </body>

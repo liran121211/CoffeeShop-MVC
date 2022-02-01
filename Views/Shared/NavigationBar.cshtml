@@ -1,0 +1,659 @@
+﻿@using CoffeeShop;
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+        }
+
+        .navbar {
+            overflow: hidden;
+            background-color: #333;
+        }
+
+            .navbar a {
+                float: left;
+                font-size: 16px;
+                color: white;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+            }
+
+        .subnav {
+            float: left;
+            overflow: hidden;
+        }
+
+            .subnav .subnavbtn {
+                font-size: 16px;
+                border: none;
+                outline: none;
+                color: white;
+                padding: 14px 16px;
+                background-color: inherit;
+                font-family: inherit;
+                margin: 0;
+            }
+
+            .navbar a:hover, .subnav:hover .subnavbtn {
+                background-color: #99A4AA;
+            }
+
+        .subnav-content {
+            display: none;
+            position: absolute;
+            left: 0;
+            background-color: #99A4AA;
+            width: 100%;
+            z-index: 1;
+        }
+
+            .subnav-content a {
+                float: left;
+                color: white;
+                text-decoration: none;
+            }
+
+                .subnav-content a:hover {
+                    background-color: #eee;
+                    color: black;
+                }
+
+        .subnav:hover .subnav-content {
+            display: block;
+        }
+
+        .navbar a.active {
+            background-color: #99A4AA;
+            color: white;
+        }
+
+        .subnavbtn i.active {
+            background-color: #99A4AA;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    @if (Request.Url.AbsolutePath.ToString().CompareTo("/Home/") == 0 || Request.Url.AbsolutePath.ToString().CompareTo("/Home") == 0 || Request.Url.AbsolutePath.ToString().CompareTo("/") == 0)
+    {
+        if (Session["Username"] != null)
+        {
+            if ((Boolean)Session["isAdmin"] == true)
+            {
+                <div class="navbar">
+                    <a class="active" href="~/Home">Home</a>
+                    <a href="~/Admin">Admin Panel</a>
+                    <a href="~/Account/Index">Account</a>
+                    <a href="~/Home/OrderStep1">Order Now</a>
+                    <a href="~/Account/LogOut">Logout</a>
+                </div>
+            }
+            else
+            {
+                <div class="navbar">
+                    <a class="active" href="~/Home">Home</a>
+                    <a href="~/Account/Index">Account</a>
+                    <a href="~/Home/OrderStep1">Order Now</a>
+                    <a href="~/Account/LogOut">Logout</a>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="navbar">
+                <a class="active" href="~/Home">Home</a>
+                <a href="~/Home/Login">Login</a>
+                <a href="~/Home/Register">Register</a>
+                <a href="~/Home/OrderStep1">Order Now</a>
+            </div>
+        }
+    }
+    @if (Request.Url.AbsolutePath.ToString().CompareTo("/Home/Login") == 0 || Request.Url.AbsolutePath.ToString().CompareTo("/Home/Login/") == 0 || Request.Url.AbsolutePath.ToString().CompareTo("/Home/VipLogin") == 0 || Request.Url.AbsolutePath.ToString().CompareTo("/Home/VipLogin/") == 0)
+    {
+        <div class="navbar">
+            <a href="~/Home">Home</a>
+            <a class="active" href="~/Home/Login">Login</a>
+            <a href="~/Home/Register">Register</a>
+            <a href="~/Home/OrderStep1">Order Now</a>
+        </div>
+    }
+    @if (Request.Url.AbsolutePath.ToString().CompareTo("/Home/Register") == 0 || Request.Url.AbsolutePath.ToString().CompareTo("/Home/Register/") == 0)
+    {
+        <div class="navbar">
+            <a href="~/Home">Home</a>
+            <a href="~/Home/Login">Login</a>
+            <a class="active" href="~/Home/Register">Register</a>
+            <a href="~/Home/OrderStep1">Order Now</a>
+        </div>
+    }
+    @if (Request.Url.AbsolutePath.ToString().Contains("OrderStep"))
+    {
+
+        if (Session["Username"] != null)
+        {
+            if ((Boolean)Session["isAdmin"] == true)
+            {
+                <div class="navbar">
+                    <a href="~/Home">Home</a>
+                    <a href="~/Admin">Admin Panel</a>
+                    <a href="~/Account/Index">Account</a>
+                    <a class="active" href="~/Home/OrderStep1">Order Now</a>
+                    <a href="~/Account/LogOut">Logout</a>
+                </div>
+            }
+            else
+            {
+                <div class="navbar">
+                    <a href="~/Home">Home</a>
+                    <a href="~/Account/Index">Account</a>
+                    <a class="active" href="~/Home/OrderStep1">Order Now</a>
+                    <a href="~/Account/LogOut">Logout</a>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="navbar">
+                <a href="~/Home">Home</a>
+                <a class="active" href="~/Home/Login">Login</a>
+                <a href="~/Home/Register">Register</a>
+                <a href="~/Home/OrderStep1">Order Now</a>
+            </div>
+        }
+    }
+
+    @if (Request.Url.AbsolutePath.ToString().CompareTo("/Account/Index") == 0 || Request.Url.AbsolutePath.ToString().CompareTo("/Account/Index/") == 0 || Request.Url.AbsolutePath.ToString().CompareTo("/Account/") == 0 || Request.Url.AbsolutePath.ToString().CompareTo("/Account") == 0)
+    {
+        if (Session["Username"] != null)
+        {
+
+            if ((Boolean)Session["isAdmin"] == true)
+            {
+                <div class="navbar">
+                    <a href="~/Home">Home</a>
+                    <a class="active" href="~/Account/Index">Account</a>
+                    <a href="~/Account/ModifyDetails">Modify Details</a>
+                    <a href="~/Account/Orders">Orders</a>
+                    <a href="~/Account/LogOut">Logout</a>
+                </div>
+            }
+            else
+            {
+                <div class="navbar">
+                    <a href="~/Home">Home</a>
+                    <a href="~/Account/ModifyDetails">Modify Details</a>
+                    <a href="~/Account/Orders">Orders</a>
+                    <a href="~/Account/LogOut">Logout</a>
+                </div>
+            }
+        }
+    }
+    @if (Request.Url.AbsolutePath.ToString().CompareTo("/Account/ModifyDetails") == 0 || Request.Url.AbsolutePath.ToString().CompareTo("/Account/ModifyDetails/") == 0)
+    {
+        <div class="navbar">
+            <a href="~/Home">Home</a>
+            <a href="~/Account/Index">Account</a>
+            <a class="active" href="~/Account/ModifyDetails">Modify Details</a>
+            <a href="~/Account/Orders">Orders</a>
+            <a href="~/Account/LogOut">Logout</a>
+        </div>
+    }
+    @if (Request.Url.AbsolutePath.ToString().CompareTo("/Account/Orders") == 0 || Request.Url.AbsolutePath.ToString().CompareTo("/Account/Orders/") == 0)
+    {
+        <div class="navbar">
+            <a href="~/Home">Home</a>
+            <a href="~/Account/Index">Account</a>
+            <a href="~/Account/ModifyDetails">Modify Details</a>
+            <a class="active" href="~/Account/Orders">Orders</a>
+            <a href="~/Account/LogOut">Logout</a>
+        </div>
+    }
+
+    @if (Request.Url.AbsolutePath.ToString().CompareTo("/Admin") == 0 || Request.Url.AbsolutePath.ToString().CompareTo("/Admin/") == 0)
+    {
+        if (Session["Username"] != null)
+        {
+            <div class="navbar">
+                <a href="~/Home">Home</a>
+                <a class="active" href="~/Admin">Admin Panel</a>
+                <div class="subnav">
+                    <button class="subnavbtn">Products <i class="fa fa-caret-down"></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageProducts">Manage Products</a>
+                        <a href="~/Admin/AddProduct">Add Product</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn">Seats <i class="fa fa-caret-down"></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageSeats">Manage Seats</a>
+                        <a href="~/Admin/ManageTablesAvailability">Tables Availability</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn">Menus <i class="fa fa-caret-down"></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageMenus">Manage Menus</a>
+                        <a href="~/Admin/AddMenu">Add Menu</a>
+                    </div>
+                </div>
+                <a href="~/Admin/ManageOrders">Orders</a>
+                <a href="~/Admin/ManageUsers">Users</a>
+                <a href="~/Account/LogOut">Logout</a>
+            </div>
+        }
+
+    }
+    @if (Request.Url.AbsolutePath.ToString().CompareTo("/Admin/AddMenu") == 0 || Request.Url.AbsolutePath.ToString().CompareTo("/Admin/AddMenu/") == 0)
+    {
+        if (Session["Username"] != null)
+        {
+            <div class="navbar">
+                <a href="~/Home">Home</a>
+                <a href="~/Admin">Admin Panel</a>
+                <div class="subnav">
+                    <button class="subnavbtn">Products<i class="active"></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageProducts">Manage Products</a>
+                        <a href="~/Admin/AddProduct">Add Product</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn">Seats <i class="fa fa-caret-down"></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageSeats">Manage Seats</a>
+                        <a href="~/Admin/ManageTablesAvailability">Tables Availability</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn"><i class="active">Menus</i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageMenus">Manage Menus</a>
+                        <a class="active" href="~/Admin/AddMenu">Add Menu</a>
+                    </div>
+                </div>
+                <a href="~/Admin/ManageOrders">Orders</a>
+                <a href="~/Admin/ManageUsers">Users</a>
+                <a href="~/Account/LogOut">Logout</a>
+            </div>
+        }
+    }
+
+    @if (Request.Url.AbsolutePath.ToString().CompareTo("/Admin/AddProduct") == 0 || Request.Url.AbsolutePath.ToString().CompareTo("/Admin/AddProduct/") == 0)
+    {
+        if (Session["Username"] != null)
+        {
+            <div class="navbar">
+                <a href="~/Home">Home</a>
+                <a href="~/Admin">Admin Panel</a>
+                <div class="subnav">
+                    <button class="subnavbtn"><i class="active">Products</i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageProducts">Manage Products</a>
+                        <a href="~/Admin/AddProduct">Add Product</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn">Seats <i class="fa fa-caret-down"></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageSeats">Manage Seats</a>
+                        <a href="~/Admin/ManageTablesAvailability">Tables Availability</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn">Menus <i class="fa fa-caret-down"></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageMenus">Manage Menus</a>
+                        <a href="~/Admin/AddMenu">Add Menu</a>
+                    </div>
+                </div>
+                <a href="~/Admin/ManageOrders">Orders</a>
+                <a href="~/Admin/ManageUsers">Users</a>
+                <a href="~/Account/LogOut">Logout</a>
+            </div>
+        }
+    }
+
+    @if (Request.Url.AbsolutePath.ToString().CompareTo("/Admin/ManageMenus") == 0 || Request.Url.AbsolutePath.ToString().CompareTo("/Admin/ManageMenus/") == 0)
+    {
+        if (Session["Username"] != null)
+        {
+            <div class="navbar">
+                <a href="~/Home">Home</a>
+                <a href="~/Admin">Admin Panel</a>
+                <div class="subnav">
+                    <button class="subnavbtn">Products<i class="active"></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageProducts">Manage Products</a>
+                        <a href="~/Admin/AddProduct">Add Product</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn">Seats <i class="fa fa-caret-down"></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageSeats">Manage Seats</a>
+                        <a href="~/Admin/ManageTablesAvailability">Tables Availability</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn"><i class="active">Menus</i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageMenus">Manage Menus</a>
+                        <a class="active" href="~/Admin/AddMenu">Add Menu</a>
+                    </div>
+                </div>
+                <a href="~/Admin/ManageOrders">Orders</a>
+                <a href="~/Admin/ManageUsers">Users</a>
+                <a href="~/Account/LogOut">Logout</a>
+            </div>
+        }
+    }
+    @if (Request.Url.AbsolutePath.ToString().CompareTo("/Admin/ManageOrders") == 0 || Request.Url.AbsolutePath.ToString().CompareTo("/Admin/ManageOrders/") == 0)
+    {
+        if (Session["Username"] != null)
+        {
+            <div class="navbar">
+                <a href="~/Home">Home</a>
+                <a href="~/Admin">Admin Panel</a>
+                <div class="subnav">
+                    <button class="subnavbtn">Products<i class="active"></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageProducts">Manage Products</a>
+                        <a href="~/Admin/AddProduct">Add Product</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn">Seats <i class="fa fa-caret-down"></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageSeats">Manage Seats</a>
+                        <a href="~/Admin/ManageTablesAvailability">Tables Availability</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn">Menus<i></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageMenus">Manage Menus</a>
+                        <a class="active" href="~/Admin/AddMenu">Add Menu</a>
+                    </div>
+                </div>
+                <a class="active" href="~/Admin/ManageOrders">Orders</a>
+                <a href="~/Admin/ManageUsers">Users</a>
+                <a href="~/Account/LogOut">Logout</a>
+            </div>
+        }
+    }
+    @if (Request.Url.AbsolutePath.ToString().CompareTo("/Admin/ManageProducts") == 0 || Request.Url.AbsolutePath.ToString().CompareTo("/Admin/ManageProducts/") == 0)
+    {
+        <div class="navbar">
+            <a href="~/Home">Home</a>
+            <a href="~/Admin">Admin Panel</a>
+            <div class="subnav">
+                <button class="subnavbtn"><i class="active">Products</i></button>
+                <div class="subnav-content">
+                    <a href="~/Admin/ManageProducts">Manage Products</a>
+                    <a href="~/Admin/AddProduct">Add Product</a>
+                </div>
+            </div>
+
+            <div class="subnav">
+                <button class="subnavbtn">Seats <i class="fa fa-caret-down"></i></button>
+                <div class="subnav-content">
+                    <a href="~/Admin/ManageSeats">Manage Seats</a>
+                    <a href="~/Admin/ManageTablesAvailability">Tables Availability</a>
+                </div>
+            </div>
+
+            <div class="subnav">
+                <button class="subnavbtn">Menus<i></i></button>
+                <div class="subnav-content">
+                    <a href="~/Admin/ManageMenus">Manage Menus</a>
+                    <a href="~/Admin/AddMenu">Add Menu</a>
+                </div>
+            </div>
+            <a href="~/Admin/ManageOrders">Orders</a>
+            <a href="~/Admin/ManageUsers">Users</a>
+            <a href="~/Account/LogOut">Logout</a>
+        </div>
+    }
+
+    @if (Request.Url.AbsolutePath.ToString().CompareTo("/Admin/ManageSeats") == 0 || Request.Url.AbsolutePath.ToString().CompareTo("/Admin/ManageSeats/") == 0)
+    {
+        if (Session["Username"] != null)
+        {
+            <div class="navbar">
+                <a href="~/Home">Home</a>
+                <a href="~/Admin">Admin Panel</a>
+                <div class="subnav">
+                    <button class="subnavbtn">Products<i></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageProducts">Manage Products</a>
+                        <a href="~/Admin/AddProduct">Add Product</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn"><i class="active">Seats</i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageSeats">Manage Seats</a>
+                        <a href="~/Admin/ManageTablesAvailability">Tables Availability</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn">Menus<i></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageMenus">Manage Menus</a>
+                        <a href="~/Admin/AddMenu">Add Menu</a>
+                    </div>
+                </div>
+                <a href="~/Admin/ManageOrders">Orders</a>
+                <a href="~/Admin/ManageUsers">Users</a>
+                <a href="~/Account/LogOut">Logout</a>
+            </div>
+        }
+    }
+    @if (Request.Url.AbsolutePath.ToString().CompareTo("/Admin/ManageTablesAvailability") == 0 || Request.Url.AbsolutePath.ToString().CompareTo("/Admin/ManageTablesAvailability/") == 0)
+    {
+        if (Session["Username"] != null)
+        {
+            <div class="navbar">
+                <a href="~/Home">Home</a>
+                <a href="~/Admin">Admin Panel</a>
+                <div class="subnav">
+                    <button class="subnavbtn">Products<i></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageProducts">Manage Products</a>
+                        <a href="~/Admin/AddProduct">Add Product</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn"><i class="active">Seats</i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageSeats">Manage Seats</a>
+                        <a href="~/Admin/ManageTablesAvailability">Tables Availability</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn">Menus<i></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageMenus">Manage Menus</a>
+                        <a href="~/Admin/AddMenu">Add Menu</a>
+                    </div>
+                </div>
+                <a href="~/Admin/ManageOrders">Orders</a>
+                <a href="~/Admin/ManageUsers">Users</a>
+                <a href="~/Account/LogOut">Logout</a>
+            </div>
+        }
+    }
+    @if (Request.Url.AbsolutePath.ToString().Contains("/Admin/ModifyMenu") || Request.Url.AbsolutePath.ToString().Contains("/Admin/ModifyMenu/"))
+    {
+        if (Session["Username"] != null)
+        {
+            <div class="navbar">
+                <a href="~/Home">Home</a>
+                <a href="~/Admin">Admin Panel</a>
+                <div class="subnav">
+                    <button class="subnavbtn">Products<i></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageProducts">Manage Products</a>
+                        <a href="~/Admin/AddProduct">Add Product</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn">Seats<i></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageSeats">Manage Seats</a>
+                        <a href="~/Admin/ManageTablesAvailability">Tables Availability</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn"><i class="active">Menus</i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageMenus">Manage Menus</a>
+                        <a href="~/Admin/AddMenu">Add Menu</a>
+                    </div>
+                </div>
+                <a href="~/Admin/ManageOrders">Orders</a>
+                <a href="~/Admin/ManageUsers">Users</a>
+                <a href="~/Account/LogOut">Logout</a>
+            </div>
+        }
+    }
+    @if (Request.Url.AbsolutePath.ToString().Contains("/Admin/ModifyOrder") || Request.Url.AbsolutePath.ToString().Contains("/Admin/ModifyOrder/"))
+    {
+        if (Session["Username"] != null)
+        {
+            <div class="navbar">
+                <a href="~/Home">Home</a>
+                <a href="~/Admin">Admin Panel</a>
+                <div class="subnav">
+                    <button class="subnavbtn">Products<i></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageProducts">Manage Products</a>
+                        <a href="~/Admin/AddProduct">Add Product</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn">Seats<i></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageSeats">Manage Seats</a>
+                        <a href="~/Admin/ManageTablesAvailability">Tables Availability</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn">Menus<i></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageMenus">Manage Menus</a>
+                        <a href="~/Admin/AddMenu">Add Menu</a>
+                    </div>
+                </div>
+                <a class="active" href="~/Admin/ManageOrders">Orders</a>
+                <a href="~/Admin/ManageUsers">Users</a>
+                <a href="~/Account/LogOut">Logout</a>
+            </div>
+        }
+    }
+
+    @if (Request.Url.AbsolutePath.ToString().Contains("/Admin/ModifyProduct") || Request.Url.AbsolutePath.ToString().Contains("/Admin/ModifyProduct/"))
+    {
+        if (Session["Username"] != null)
+        {
+            <div class="navbar">
+                <a href="~/Home">Home</a>
+                <a href="~/Admin">Admin Panel</a>
+                <div class="subnav">
+                    <button class="subnavbtn"><i class="active">Products</i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageProducts">Manage Products</a>
+                        <a href="~/Admin/AddProduct">Add Product</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn">Seats<i></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageSeats">Manage Seats</a>
+                        <a href="~/Admin/ManageTablesAvailability">Tables Availability</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn">Menus<i></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageMenus">Manage Menus</a>
+                        <a href="~/Admin/AddMenu">Add Menu</a>
+                    </div>
+                </div>
+                <a href="~/Admin/ManageOrders">Orders</a>
+                <a href="~/Admin/ManageUsers">Users</a>
+                <a href="~/Account/LogOut">Logout</a>
+            </div>
+        }
+    }
+
+    @if (Request.Url.AbsolutePath.ToString().Contains("/Admin/ManageUsers") || Request.Url.AbsolutePath.ToString().Contains("/Admin/ManageUsers/"))
+    {
+        if (Session["Username"] != null)
+        {
+            <div class="navbar">
+                <a href="~/Home">Home</a>
+                <a href="~/Admin">Admin Panel</a>
+                <div class="subnav">
+                    <button class="subnavbtn">Products<i></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageProducts">Manage Products</a>
+                        <a href="~/Admin/AddProduct">Add Product</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn">Seats<i></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageSeats">Manage Seats</a>
+                        <a href="~/Admin/ManageTablesAvailability">Tables Availability</a>
+                    </div>
+                </div>
+
+                <div class="subnav">
+                    <button class="subnavbtn">Menus<i></i></button>
+                    <div class="subnav-content">
+                        <a href="~/Admin/ManageMenus">Manage Menus</a>
+                        <a href="~/Admin/AddMenu">Add Menu</a>
+                    </div>
+                </div>
+                <a href="~/Admin/ManageOrders">Orders</a>
+                <a class="active" href="~/Admin/ManageUsers">Users</a>
+                <a href="~/Account/LogOut">Logout</a>
+            </div>
+        }
+    }
+</body>
+</html>

@@ -5,27 +5,94 @@
     Layout = null;
 }
 
-<!DOCTYPE html>
+@functions {
+    private Boolean isTableTaken(int col)
+    {
+        if (col == 1)
+        {
+            for (int i = 0; i < Model.AvailableSeats.Count; i++)
+                if (Model.AvailableSeats[i].Col1 == true)
+                    return true;
+        }
+        if (col == 2)
+        {
+            for (int i = 0; i < Model.AvailableSeats.Count; i++)
+                if (Model.AvailableSeats[i].Col2 == true)
+                    return true;
+        }
+        if (col == 3)
+        {
+            for (int i = 0; i < Model.AvailableSeats.Count; i++)
+                if (Model.AvailableSeats[i].Col3 == true)
+                    return true;
+        }
+        if (col == 4)
+        {
+            for (int i = 0; i < Model.AvailableSeats.Count; i++)
+                if (Model.AvailableSeats[i].Col4 == true)
+                    return true;
+        }
+        if (col == 5)
+        {
+            for (int i = 0; i < Model.AvailableSeats.Count; i++)
+                if (Model.AvailableSeats[i].Col5 == true)
+                    return true;
+        }
 
+        return false;
+    }
+    private Boolean isAvailableToday(int Table)
+    {
+        String today_name = System.DateTime.Now.DayOfWeek.ToString();
+
+        if (today_name.CompareTo("Sunday") == 0)
+            if (Model.TablesAvailability.vmTablesAvailability[Table -1].Sunday == false)
+                return false;
+        if (today_name.CompareTo("Monday") == 0)
+            if (Model.TablesAvailability.vmTablesAvailability[Table - 1].Monday == false)
+                return false;
+        if (today_name.CompareTo("Tuesday") == 0)
+            if (Model.TablesAvailability.vmTablesAvailability[Table - 1].Tuesday == false)
+                return false;
+        if (today_name.CompareTo("Wednesday") == 0)
+            if (Model.TablesAvailability.vmTablesAvailability[Table - 1].Wednesday == false)
+                return false;
+        if (today_name.CompareTo("Thursday") == 0)
+            if (Model.TablesAvailability.vmTablesAvailability[Table - 1].Thursday == false)
+                return false;
+        if (today_name.CompareTo("Friday") == 0)
+            if (Model.TablesAvailability.vmTablesAvailability[Table - 1].Friday == false)
+                return false;
+        if (today_name.CompareTo("Saturday") == 0)
+            if (Model.TablesAvailability.vmTablesAvailability[Table - 1].Saturday == false)
+                return false;
+
+        return true;
+    }
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Seats</title>
 </head>
 <body>
+    @Html.Partial("NavigationBar")
     <div>
-        @using (Html.BeginForm("SubmitOrderStep6", "Admin", FormMethod.Post))
+        @using (Html.BeginForm("SubmitOrderStep6", "Home", FormMethod.Post))
         {
             @Html.HiddenFor(m => m.CurrentDate)
             @Html.HiddenFor(m => m.Location)
             @Html.HiddenFor(m => m.Category)
             @Html.HiddenFor(m => m.TotalOrder)
+            @Html.HiddenFor(m => m.OrderTimeInterval)
             TempData["AvailableMenus"] = Model.AvailableMenus;
             TempData["AvailableProducts"] = Model.AvailableProducts;
             TempData["MaxPricePerProduct"] = Model.MaxPricePerProduct;
             TempData["LoggedInUser"] = Model.LoggedInUser;
             TempData["SelectedMenu"] = Model.SelectedMenu;
             TempData["SelectedProducts"] = Model.SelectedProducts;
+            TempData["AvailableSeats"] = Model.AvailableSeats;
 
             <h1 style="text-align: center;">Choose Seats</h1>
             <h2 style="text-align: center;">Total Order: @Model.TotalOrder ILS</h2>
@@ -33,11 +100,91 @@
                 <tbody>
                     <tr style="height: 18px;">
                         <td style="width: 16.6667%; text-align: center; height: 18px;"></td>
-                        <td style="width: 16.6667%; text-align: center; height: 18px;">Inside Table #1</td>
-                        <td style="width: 16.6667%; text-align: center; height: 18px;">Inside Table #2</td>
-                        <td style="width: 16.6667%; text-align: center; height: 18px;">Inside Table #3</td>
-                        <td style="width: 16.6667%; text-align: center; height: 18px;">Inside Table #4</td>
-                        <td style="width: 16.6667%; text-align: center; height: 18px;">Balcony Table #1</td>
+                        <td style="width: 16.6667%; text-align: center; height: 18px;">
+                            @if (!isAvailableToday(1))
+                            {
+                                @:Inside Table #1 <strong style="color:orangered">(Not Availalbe Today)</strong>
+                            }
+                            else
+                            {
+                                if (isTableTaken(1))
+                                {
+                                    @:Inside Table #1 <strong style="color:orangered">(Taken)</strong>
+                                }
+                                else
+                                {
+                                    @:Inside Table #1
+                                }
+                            }
+                        </td>
+                        <td style="width: 16.6667%; text-align: center; height: 18px;">
+                            @if (!isAvailableToday(2))
+                            {
+                                @:Inside Table #1 <strong style="color:orangered">(Not Availalbe Today)</strong>
+                            }
+                            else
+                            {
+                                if (isTableTaken(2))
+                                {
+                                    @:Inside Table #1 <strong style="color:orangered">(Taken)</strong>
+                                }
+                                else
+                                {
+                                    @:Inside Table #1
+                                }
+                            }
+                        </td>
+                        <td style="width: 16.6667%; text-align: center; height: 18px;">
+                            @if (!isAvailableToday(3))
+                            {
+                                @:Inside Table #1 <strong style="color:orangered">(Not Availalbe Today)</strong>
+                            }
+                            else
+                            {
+                                if (isTableTaken(3))
+                                {
+                                    @:Inside Table #1 <strong style="color:orangered">(Taken)</strong>
+                                }
+                                else
+                                {
+                                    @:Inside Table #1
+                                }
+                            }
+                        </td>
+                        <td style="width: 16.6667%; text-align: center; height: 18px;">
+                            @if (!isAvailableToday(4))
+                            {
+                                @:Inside Table #1 <strong style="color:orangered">(Not Availalbe Today)</strong>
+                            }
+                            else
+                            {
+                                if (isTableTaken(4))
+                                {
+                                    @:Inside Table #1 <strong style="color:orangered">(Taken)</strong>
+                                }
+                                else
+                                {
+                                    @:Inside Table #1
+                                }
+                            }
+                        </td>
+                        <td style="width: 16.6667%; text-align: center; height: 18px;">
+                            @if (!isAvailableToday(5))
+                            {
+                                @:Inside Table #1 <strong style="color:orangered">(Not Availalbe Today)</strong>
+                            }
+                            else
+                            {
+                                if (isTableTaken(5))
+                                {
+                                    @:Inside Table #1 <strong style="color:orangered">(Taken)</strong>
+                                }
+                                else
+                                {
+                                    @:Inside Table #1
+                                }
+                            }
+                        </td>
                     </tr>
                     @{int count_row = 1; }
 
@@ -47,7 +194,7 @@
                         <tr style="height: 18px;">
                             <td style="width: 16.6667%; text-align: center; height: 18px;">Chair #@count_row</td>
                             <td style="width: 16.6667%; text-align: center; height: 18px;">
-                                @if (Model.AvailableSeats[i].Col1 == true)
+                                @if (isTableTaken(1) || !isAvailableToday(1))
                                 {
                                     @Html.CheckBoxFor(m => m.AvailableSeats[i].Col1, new { @disabled = "disabled" })
                                 }
@@ -57,7 +204,7 @@
                                 }
                             </td>
                             <td style="width: 16.6667%; text-align: center; height: 18px;">
-                                @if (Model.AvailableSeats[i].Col2 == true)
+                                @if (isTableTaken(2) || !isAvailableToday(2))
                                 {
                                     @Html.CheckBoxFor(m => m.AvailableSeats[i].Col2, new { @disabled = "disabled" })
                                 }
@@ -67,7 +214,7 @@
                                 }
                             </td>
                             <td style="width: 16.6667%; text-align: center; height: 18px;">
-                                @if (Model.AvailableSeats[i].Col3 == true)
+                                @if (isTableTaken(3) || !isAvailableToday(3))
                                 {
                                     @Html.CheckBoxFor(m => m.AvailableSeats[i].Col3, new { @disabled = "disabled" })
                                 }
@@ -77,7 +224,7 @@
                                 }
                             </td>
                             <td style="width: 16.6667%; text-align: center; height: 18px;">
-                                @if (Model.AvailableSeats[i].Col4 == true)
+                                @if (isTableTaken(4) || !isAvailableToday(4))
                                 {
                                     @Html.CheckBoxFor(m => m.AvailableSeats[i].Col4, new { @disabled = "disabled" })
                                 }
@@ -87,7 +234,7 @@
                                 }
                             </td>
                             <td style="width: 16.6667%; text-align: center; height: 18px;">
-                                @if (Model.AvailableSeats[i].Col5 == true)
+                                @if (isTableTaken(5) || !isAvailableToday(5))
                                 {
                                     @Html.CheckBoxFor(m => m.AvailableSeats[i].Col5, new { @disabled = "disabled" })
                                 }

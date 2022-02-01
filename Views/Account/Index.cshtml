@@ -12,23 +12,30 @@
     <title>Index</title>
 </head>
 <body>
-    <h1 style="text-align: center;"><strong>Account Dashboard</strong></h1>
-    <table style="border-collapse: collapse; width: 100%;" border="1">
-        <tbody>
-            <tr>
-                @if (Model.Role.Trim().Equals("Admin"))
-                {
-                    <td style="width: 25.00%; text-align: center;"><a href="~/Admin">Admin Panel</a></td>
-                }
-                <td style="width: 25.00%; text-align: center;"><a href="Account/UpdateDetails">Modify Details</a></td>
-                <td style="width: 25.00%; text-align: center;"><a href="Account/Orders">Orders</a></td>
-                <td style="width: 25.00%; text-align: center;"><a href="Account/LogOut">Logout</a></td>
-            </tr>
-        </tbody>
-    </table>
-    <p>Full Name: @Model.FirstName @Model.LastName</p>
-    <p>Account Type: @Model.Role</p>
-    <p>Username: @Model.Username</p>
-    <p>Email: @Model.Email</p>
+    <center>
+        @Html.Partial("NavigationBar")
+        <h1 style="text-align: center;"><strong>Account Dashboard</strong></h1>
+        <p>Full Name: @Model.FirstName @Model.LastName</p>
+        <p>Account Type: @Model.Role</p>
+        <p>Username: @Model.Username</p>
+        <p>Email: @Model.Email</p>
+        <p>
+            VIP Status:
+            @if (Model.VIP == true)
+            {
+                <strong style="color:forestgreen">Active</strong>
+            }
+            else
+            {
+                <strong style="color:orangered">Not Active</strong>
+            }
+        </p>
+        <p>
+            @if (Model.VIPNumber != -1)
+            {
+                @:VIP Card Number: @Model.VIPNumber
+            }
+        </p>
+    </center>
 </body>
 </html>

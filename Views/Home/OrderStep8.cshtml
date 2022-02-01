@@ -1,0 +1,67 @@
+﻿@model CoffeeShop.Models.Orders
+@using CoffeeShop.Models
+
+@{
+    Layout = null;
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,400|Montserrat:700' rel='stylesheet' type='text/css'>
+
+    <link href="@Url.Content("//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css")" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://2-22-4-dot-lead-pages.appspot.com/static/lp918/min/default_thank_you.css">
+    <script src="https://2-22-4-dot-lead-pages.appspot.com/static/lp918/min/jquery-1.9.1.min.js"></script>
+    <script src="https://2-22-4-dot-lead-pages.appspot.com/static/lp918/min/html5shiv.js"></script>
+</head>
+<body>
+    @Html.Partial("NavigationBar")
+    <script>
+        // Set the date we're counting down to
+        var countDownDate = new Date(new Date().getTime() + 7000); //Redirect in 7 sec.
+
+        // Update the count down every 1 second
+        var x = setInterval(function () {
+
+            // Get today's date and time
+            var now = new Date().getTime();
+
+            // Find the distance between now and the count down date
+            var distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Output the result in an element with id="demo"
+            document.getElementById("order_timer").innerHTML = seconds + " seconds...";
+
+            // If the count down is over, write some text
+            if (distance < 1) {
+                clearInterval(x);
+                @{ TempData["NewOrder"] = Model.Id.ToString(); }
+                window.location.href = "@Url.Action("Orders", "Account")";
+            }
+        }, 1000);
+    </script>
+    <header class="site-header" id="header">
+        <h1 class="site-header__title" data-lead-id="site-header-title">THANK YOU!</h1>
+    </header>
+
+    <div class="main-content">
+        <i class="fa fa-check main-content__checkmark" id="checkmark"></i>
+        <p class="main-content__body" data-lead-id="main-content-body">Thank you for placing an order. One of our baristas will handle your order soon. You will now be taken to your order page in <b id="order_timer"></b></p>
+    </div>
+
+    <footer class="site-footer" id="footer">
+        <p class="site-footer__fineprint" id="fineprint">Copyright ©2022 | All Rights Reserved</p>
+    </footer>
+</body>
+</html>

@@ -12,11 +12,13 @@
     <title>OrderStep4</title>
 </head>
 <body>
+    @Html.Partial("NavigationBar")
     @using (Html.BeginForm("SubmitOrderStep4", "Home", FormMethod.Post))
     {
         @Html.HiddenFor(m => m.CurrentDate)
         @Html.HiddenFor(m => m.Location)
         @Html.HiddenFor(m => m.Category)
+        @Html.HiddenFor(m => m.OrderTimeInterval)
         TempData["AvailableMenus"] = Model.AvailableMenus;
         TempData["MaxPricePerProduct"] = Model.MaxPricePerProduct;
         <div>

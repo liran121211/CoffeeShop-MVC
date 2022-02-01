@@ -1,0 +1,42 @@
+﻿@model CoffeeShop.ViewModel.UsersViewModel
+@using CoffeeShop.Models
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ManageProducts</title>
+</head>
+<body>
+    @Html.Partial("NavigationBar")
+    <div>
+        <h1 style="text-align: center;">Manage Users</h1>
+        <center><p><h3>Drinks</h3></p></center>
+        <table style="border-collapse: collapse; width: 100%; margin-left: auto; margin-right: auto;" border="1">
+            <tbody>
+                <tr>
+                    <td style="width: 25%; text-align: center;">Full Name</td>
+                    <td style="width: 25%; text-align: center;">Username</td>
+                    <td style="width: 25%; text-align: center;">Role</td>
+                    <td style="width: 25%; text-align: center;">Action</td>
+                </tr>
+
+                @foreach (Users user in Model.vmUsers)
+                {
+            <tr>
+                <td style="width: 25%; text-align: center;">@user.FirstName @user.LastName</td>
+                <td style="width: 25%; text-align: center;">@user.Username</td>
+                <td style="width: 25%; text-align: center;">@user.Role</td>
+                <td style="width: 25%; text-align: center;"><a href="@Url.Action("ModifyUser", new { user.Id})">Edit</a></td>
+            </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

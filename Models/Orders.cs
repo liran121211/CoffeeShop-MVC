@@ -23,7 +23,15 @@ namespace CoffeeShop.Models
 
         public string Status { get; set; }
 
-        public string Date { get; set; }
+        public DateTime Date { get; set; }
+
+        public string Location { get; set; }
+
+        public string Category { get; set; }
+
+        public double TotalOrder { get; set; }
+
+        public string Seats { get; set; }
 
 
     }

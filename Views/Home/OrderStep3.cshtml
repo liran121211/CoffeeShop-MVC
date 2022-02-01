@@ -11,11 +11,13 @@
     <title>OrderStep3</title>
 </head>
 <body>
+    @Html.Partial("NavigationBar")
     @using (Html.BeginForm("SubmitOrderStep3", "Home", FormMethod.Post))
     {
         @Html.HiddenFor(m => m.CurrentDate)
         @Html.HiddenFor(m => m.Location)
         @Html.HiddenFor(m => m.Category)
+        @Html.HiddenFor(m => m.OrderTimeInterval)
         <div>
             <h1 style="text-align: center;">How Much Would You Like To Pay For The Order?</h1>
             <center>

@@ -6,6 +6,8 @@ using System.Web.Mvc;
 using CoffeeShop.Models;
 using CoffeeShop.Dal;
 using CoffeeShop.ViewModel;
+using Newtonsoft.Json;
+using System.Timers;
 
 namespace CoffeeShop.Controllers
 {
@@ -64,6 +66,11 @@ namespace CoffeeShop.Controllers
                 if (user.Username.Trim().Equals(form_data.Username.Trim()) && user.Password.Trim().Equals(form_data.Password.Trim()))
                 {
                     Session["Username"] = user.Username.ToString().Trim();
+
+                    if (user.Role.Trim().CompareTo("Admin") == 0)
+                        Session["isAdmin"] = true;
+                    else
+                        Session["isAdmin"] = false;
                     return RedirectToAction("Index", "Account");
                 }
             }
@@ -71,17 +78,60 @@ namespace CoffeeShop.Controllers
             return View("Login");
         }
 
+        public ActionResult VipLogin()
+        {
+            // if user logged in return to account area
+            if (isLoggenIn())
+                return RedirectToAction("Index", "Account");
+            return View("VipLogin");
+        }
+
+        [HttpPost]
+        public ActionResult SubmitVipLogin(Users form_data)
+        {
+            if (form_data.VIPNumber.CompareTo("") == 0)
+            {
+                ViewBag.Message = "Did you forget to enter your VIP Card Number?";
+                return View("Login");
+            }
+
+            UsersDal dal_obj = new UsersDal();
+            UsersViewModel vm = new UsersViewModel();
+            List<Users> users_list = dal_obj.dalUsers.ToList();
+            vm.vmUsers = users_list;
+
+            foreach (Users user in vm.vmUsers)
+            {
+                if (user.VIPNumber == form_data.VIPNumber)
+                {
+                    Session["Username"] = user.Username.ToString().Trim();
+
+                    if (user.Role.Trim().CompareTo("Admin") == 0)
+                        Session["isAdmin"] = true;
+                    else
+                        Session["isAdmin"] = false;
+                    return RedirectToAction("Index", "Account");
+                }
+            }
+            ViewBag.Message = "Invalid VIP Card Number!";
+            return View("Login");
+        }
+
         public ActionResult OrderStep1() // Chose Location
         {
             if (isLoggenIn())
             {
-                
-                ViewBag.Message = TempData["OrderError"];
+                if (TempData["OrderExpired"] != null)
+                    ViewBag.Message = TempData["OrderExpired"];
+                if (TempData["OrderError"] != null)
+                    ViewBag.Message = TempData["OrderError"];
+
                 MakeOrderViewModel order_form = new MakeOrderViewModel();
                 if (TempData["OrderData"] != null)
                     order_form = (MakeOrderViewModel)TempData["OrderData"];
 
                 order_form.CurrentDate = DateTime.Now;
+                order_form.OrderTimeInterval = 8;
                 UpdateOrderProcess("OrderStep1");
                 return View("OrderStep1", order_form);
             }
@@ -286,8 +336,8 @@ namespace CoffeeShop.Controllers
             {
                 if (TempData["OrderData"] != null && Session["OrderSession"].ToString().CompareTo("OrderStep5") == 0)
                     order_form = (MakeOrderViewModel)TempData["OrderData"];
-                
-                if (TempData["SortMenu"]!= null && Session["OrderSession"].ToString().CompareTo("OrderStep5") == 0)
+
+                if (TempData["SortMenu"] != null && Session["OrderSession"].ToString().CompareTo("OrderStep5") == 0)
                 {
                     order_form = (MakeOrderViewModel)TempData["SortMenu"];
                     order_form.AvailableProducts = SortProducts(order_form.AvailableProducts, form_collection["Sort"].ToString());
@@ -301,6 +351,18 @@ namespace CoffeeShop.Controllers
 
         public ActionResult SubmitOrderStep5(MakeOrderViewModel order_form, FormCollection form_collection)
         {
+            int CheckBoxToProduct(String encoded_value)
+            {
+                return int.Parse(encoded_value.Split('#')[1]);
+            }
+
+            int DropDownListToProduct(String encoded_value)
+            {
+                if (encoded_value.CompareTo("") == 0)
+                    return 1;
+                return int.Parse(encoded_value.Replace('X'.ToString(), String.Empty));
+            }
+
             if (isLoggenIn())
             {
                 if (!ValidateOrderProcess("OrderStep5"))
@@ -310,7 +372,7 @@ namespace CoffeeShop.Controllers
                 }
 
                 // Gather order_form parameters sent from view.
-                if (form_collection["SelectedMenu"] != null)
+                if (TempData["SelectedMenu"] != null)
                     order_form.SelectedMenu = (Menu)TempData["SelectedMenu"];
                 if (TempData["AvailableMenus"] != null)
                     order_form.AvailableMenus = (List<Menu>)TempData["AvailableMenus"];
@@ -323,28 +385,60 @@ namespace CoffeeShop.Controllers
 
                 ProductsDal p_dal = new ProductsDal();
 
-                for (int i = 3; i < form_collection.Count; i++)
+                for (int i = 0; i < form_collection.Count; i++)
                 {
-                    int product_id = int.Parse(form_collection.GetKey(i));
-                    Products temp_product = p_dal.dalProducts.Where(m => m.Id == product_id).First(); ;
+                    int product_id = -1, product_quantity = 1;
+                    Products temp_product = null;
+                    if (form_collection.GetKey(i).Contains("CHECKBOX"))
+                    {
+                        product_id = CheckBoxToProduct(form_collection.GetKey(i));
+                        product_quantity = DropDownListToProduct(form_collection["DDL#" + product_id.ToString()]);
+                        temp_product = p_dal.dalProducts.Where(m => m.Id == product_id).First();
 
-                    if (temp_product != null)
-                        order_form.SelectedProducts.Add(temp_product);
+                        if (temp_product != null)
+                            order_form.SelectedProducts.Add((temp_product, product_quantity));
+                    }
                 }
                 order_form.TotalOrder = 0;
-                order_form.TotalOrder = order_form.SelectedProducts.Sum(m=>m.DiscountedPrice);
+                order_form.TotalOrder = order_form.SelectedProducts.Sum(m => m.Item1.DiscountedPrice * m.Item2);
 
                 return OrderStep6(order_form);
             }
             return View("Login");
         }
 
-        public ActionResult OrderStep6(MakeOrderViewModel order_form) // Chose Price Range
+        public ActionResult OrderStep6(MakeOrderViewModel order_form) // Chose Seats
         {
             if (isLoggenIn())
             {
                 if (TempData["OrderData"] != null && Session["OrderSession"].ToString().CompareTo("OrderStep6") == 0)
                     order_form = (MakeOrderViewModel)TempData["OrderData"];
+
+                SeatsDal s_dal = new SeatsDal();
+                TablesAvailabilityDal ta_dal = new TablesAvailabilityDal();
+                TablesAvailabilityViewModel ta = new TablesAvailabilityViewModel();
+
+                ta.vmTablesAvailability = ta_dal.dalTablesAvailability.ToList();
+                order_form.AvailableSeats = s_dal.dalSeats.ToList();
+                order_form.TablesAvailability = ta;
+
+                UpdateOrderProcess("OrderStep6");
+                return View("OrderStep6", order_form);
+            }
+            return View("Login");
+        }
+
+
+
+        public ActionResult SubmitOrderStep6(MakeOrderViewModel order_form)
+        {
+            if (isLoggenIn())
+            {
+                if (!ValidateOrderProcess("OrderStep6"))
+                {
+                    TempData["OrderError"] = "An error occurred while processing the order, please try again...";
+                    return RedirectToAction("OrderStep1", "Home");
+                }
 
                 // Gather order_form parameters sent from view.
                 if (TempData["SelectedMenu"] != null)
@@ -358,13 +452,150 @@ namespace CoffeeShop.Controllers
                 if (TempData["LoggedInUser"] != null)
                     order_form.LoggedInUser = (Users)TempData["LoggedInUser"];
                 if (TempData["SelectedProducts"] != null)
-                    order_form.SelectedProducts = (List<Products>)TempData["SelectedProducts"];
+                    order_form.SelectedProducts = (List<(Products, int)>)TempData["SelectedProducts"];
 
                 SeatsDal s_dal = new SeatsDal();
-                order_form.AvailableSeats = s_dal.dalSeats.ToList();
+                List<(int, int)> selected_seats = new List<(int, int)>();
+                for (int i = 0; i < order_form.AvailableSeats.Count; i++)
+                {
+                    if (order_form.AvailableSeats[i].Col1 == true)
+                        selected_seats.Add((i, 1));
+                    if (order_form.AvailableSeats[i].Col2 == true)
+                        selected_seats.Add((i, 2));
+                    if (order_form.AvailableSeats[i].Col3 == true)
+                        selected_seats.Add((i, 3));
+                    if (order_form.AvailableSeats[i].Col4 == true)
+                        selected_seats.Add((i, 4));
+                    if (order_form.AvailableSeats[i].Col5 == true)
+                        selected_seats.Add((i, 5));
 
-                UpdateOrderProcess("OrderStep6");
-                return View("OrderStep6", order_form);
+                    if (s_dal.dalSeats.Where(m => m.Id == i + 13).First().Col1 == false)
+                        s_dal.dalSeats.Where(m => m.Id == i + 13).First().Col1 = order_form.AvailableSeats[i].Col1;
+                    if (s_dal.dalSeats.Where(m => m.Id == i + 13).First().Col2 == false)
+                        s_dal.dalSeats.Where(m => m.Id == i + 13).First().Col2 = order_form.AvailableSeats[i].Col2;
+                    if (s_dal.dalSeats.Where(m => m.Id == i + 13).First().Col3 == false)
+                        s_dal.dalSeats.Where(m => m.Id == i + 13).First().Col3 = order_form.AvailableSeats[i].Col3;
+                    if (s_dal.dalSeats.Where(m => m.Id == i + 13).First().Col4 == false)
+                        s_dal.dalSeats.Where(m => m.Id == i + 13).First().Col4 = order_form.AvailableSeats[i].Col4;
+                    if (s_dal.dalSeats.Where(m => m.Id == i + 13).First().Col5 == false)
+                        s_dal.dalSeats.Where(m => m.Id == i + 13).First().Col5 = order_form.AvailableSeats[i].Col5;
+                }
+                s_dal.SaveChanges();
+                order_form.SelectedSeats = selected_seats;
+
+                order_form.OrderTimer = new System.Timers.Timer(order_form.OrderTimeInterval * 60000); // This will raise the event every one minute. 6 SEC
+                order_form.OrderTimer.Enabled = true;
+                order_form.OrderTimer.Elapsed += new System.Timers.ElapsedEventHandler(OrderTimer);
+
+                void OrderTimer(object sender, System.Timers.ElapsedEventArgs e)
+                {
+                    order_form.OrderTimer.Stop();
+                    ReverseSeats(order_form);
+                }
+
+                return OrderStep7(order_form);
+            }
+            return View("Login");
+        }
+
+
+        public ActionResult OrderStep7(MakeOrderViewModel order_form) // Confirm Order
+        {
+            if (isLoggenIn())
+            {
+                if (TempData["OrderData"] != null && Session["OrderSession"].ToString().CompareTo("OrderStep7") == 0)
+                    order_form = (MakeOrderViewModel)TempData["OrderData"];
+
+                UpdateOrderProcess("OrderStep7");
+                return View("OrderStep7", order_form);
+            }
+            return View("Login");
+        }
+
+        public ActionResult SubmitOrderStep7(MakeOrderViewModel order_form)
+        {
+            if (isLoggenIn())
+            {
+                if (!ValidateOrderProcess("OrderStep7"))
+                {
+                    TempData["OrderError"] = "An error occurred while processing the order, please try again...";
+                    return RedirectToAction("OrderStep1", "Home");
+                }
+
+                // Gather order_form parameters sent from view.
+                if (TempData["SelectedMenu"] != null)
+                    order_form.SelectedMenu = (Menu)TempData["SelectedMenu"];
+                if (TempData["AvailableMenus"] != null)
+                    order_form.AvailableMenus = (List<Menu>)TempData["AvailableMenus"];
+                if (TempData["MaxPricePerProduct"] != null)
+                    order_form.MaxPricePerProduct = (double)TempData["MaxPricePerProduct"];
+                if (TempData["AvailableProducts"] != null)
+                    order_form.AvailableProducts = (List<Products>)TempData["AvailableProducts"];
+                if (TempData["LoggedInUser"] != null)
+                    order_form.LoggedInUser = (Users)TempData["LoggedInUser"];
+                if (TempData["SelectedProducts"] != null)
+                    order_form.SelectedProducts = (List<(Products, int)>)TempData["SelectedProducts"];
+                if (TempData["SelectedSeats"] != null)
+                    order_form.SelectedSeats = (List<(int, int)>)TempData["SelectedSeats"];
+                if (TempData["TransactionIdentifier"] != null)
+                    order_form.TransactionIdentifier = (String)TempData["TransactionIdentifier"];
+                if (TempData["OrderTimer"] != null)
+                    order_form.OrderTimer = (Timer)TempData["OrderTimer"];
+
+                //Save all order data to db.
+                OrdersDal o_dal = new OrdersDal();
+                OrderProductsDal op_dal = new OrderProductsDal();
+                SerializedOrdersDal so_dal = new SerializedOrdersDal();
+                Orders submitted_order = new Orders();
+                String order_seats = "";
+
+                foreach ((int, int) seat in order_form.SelectedSeats)
+                {
+                    order_seats += seat.Item1.ToString() + "#" + seat.Item2.ToString() + "##";
+                }
+
+                submitted_order.Barista = "Not Yet Assigned";
+                submitted_order.Status = "Pending";
+                submitted_order.Date = order_form.CurrentDate;
+                submitted_order.Location = order_form.Location;
+                submitted_order.Category = order_form.Category;
+                submitted_order.TotalOrder = order_form.TotalOrder;
+                submitted_order.UserId = order_form.LoggedInUser.Id;
+                submitted_order.Seats = order_seats;
+                submitted_order.TransactionId = order_form.TransactionIdentifier;
+                o_dal.dalOrders.Add(submitted_order);
+                o_dal.SaveChanges();
+
+                int order_id = o_dal.dalOrders.Attach(submitted_order).Id;
+                foreach ((Products prod, int quantity) product in order_form.SelectedProducts)
+                {
+                    OrderProducts op = new OrderProducts();
+                    op.OrderId = order_id;
+                    op.ProductId = product.prod.Id;
+                    op.Quantity = product.quantity;
+                    op_dal.dalOrderProducts.Add(op);
+                }
+                op_dal.SaveChanges();
+
+                SerializedOrders so = new SerializedOrders();
+                so.SerializedData = JsonConvert.SerializeObject(order_form);
+                so.Id = order_id;
+                //so_dal.dalSerializedOrders.Add(so);
+                //so_dal.SaveChanges();
+
+                order_form.OrderTimer.Stop();
+                return OrderStep8(submitted_order);
+            }
+            return View("Login");
+        }
+
+        public ActionResult OrderStep8(Orders order)
+        {
+            if (isLoggenIn())
+            {
+                TempData = null;
+                UpdateOrderProcess("OrderStep1");
+                return View("OrderStep8", order);
             }
             return View("Login");
         }
@@ -416,6 +647,12 @@ namespace CoffeeShop.Controllers
                     TempData["SortMenu"] = null;
                     return RedirectToAction("OrderStep5", "Home");
                 }
+                if (Session["OrderSession"].ToString().CompareTo("OrderStep7") == 0)
+                {
+                    UpdateOrderProcess("OrderStep6");
+                    order_form = ReverseSeats((MakeOrderViewModel)TempData["OrderData"]);
+                    return RedirectToAction("OrderStep6", "Home");
+                }
             }
             return RedirectToAction("Login", "Home");
         }
@@ -464,6 +701,31 @@ namespace CoffeeShop.Controllers
                 }
             }
             return RedirectToAction("Login", "Home");
+        }
+
+        private MakeOrderViewModel ReverseSeats(MakeOrderViewModel order_form)
+        {
+            SeatsDal s_dal = new SeatsDal();
+            for (int i = 0; i < order_form.SelectedSeats.Count; i++)
+            {
+                int row_n = order_form.SelectedSeats[i].Item1;
+
+                if (order_form.SelectedSeats[i].Item2 == 1)
+                    s_dal.dalSeats.Where(m => m.Id == row_n + 13).First().Col1 = false;
+                if (order_form.SelectedSeats[i].Item2 == 2)
+                    s_dal.dalSeats.Where(m => m.Id == row_n + 13).First().Col2 = false;
+                if (order_form.SelectedSeats[i].Item2 == 3)
+                    s_dal.dalSeats.Where(m => m.Id == row_n + 13).First().Col3 = false;
+                if (order_form.SelectedSeats[i].Item2 == 4)
+                    s_dal.dalSeats.Where(m => m.Id == row_n + 13).First().Col4 = false;
+                if (order_form.SelectedSeats[i].Item2 == 5)
+                    s_dal.dalSeats.Where(m => m.Id == row_n + 13).First().Col5 = false;
+            }
+            s_dal.SaveChanges();
+            order_form.AvailableSeats = s_dal.dalSeats.ToList();
+            order_form.SelectedSeats = new List<(int, int)>();
+
+            return order_form;
         }
 
         private List<Products> SortProducts(List<Products> p_list, String Mode)

@@ -1,0 +1,88 @@
+﻿@model CoffeeShop.Models.Users
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>UpdateDetails</title>
+</head>
+<body>
+    @Html.Partial("NavigationBar")
+    <center>
+        @using (Html.BeginForm("SubmitUpdateDetails", "Account", FormMethod.Post))
+        {
+            <table cellpadding="0" cellspacing="5">
+                <tr>
+                    <th colspan="2" align="center">Update Account Information</th>
+                </tr>
+                <tr>
+                    <td>First Name: </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.FirstName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Last Name: </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.LastName)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Username: </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.Username)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Email: </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.Email)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Password: </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.Password)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Age: </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.Age)
+                    </td>
+                </tr>
+                <tr>
+                    <td>VIP Status: </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.VIP, new { disabled = "disabled" })
+                    </td>
+                </tr>
+                @if (Model.VIP == true)
+                {
+                    <tr>
+                        <td>VIP Number: </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.VIPNumber, new { disabled = "disabled" })
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td></td>
+                    <td><input type="submit" value="Update" /></td>
+                </tr>
+            </table>
+            if (@ViewBag.Message != null)
+            {
+                <div id="popupdiv" style="border: 1px solid red;">
+                    @ViewBag.Message
+                </div>
+            }
+        }
+    </center>
+</body>
+</html>

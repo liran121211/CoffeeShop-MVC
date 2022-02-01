@@ -30,12 +30,13 @@ namespace CoffeeShop.Controllers
             return View("~/Views/Home/Login.cshtml");
         }
 
-        public ActionResult UpdateDetails()
+        public ActionResult ModifyDetails()
         {
             if (Session["Username"] != null)
                 return View(RetrieveUser(Session["Username"].ToString()));
             return View("~/Views/Home/Login.cshtml");
         }
+
 
         public ActionResult SubmitUpdateDetails(Users form_data)
         {

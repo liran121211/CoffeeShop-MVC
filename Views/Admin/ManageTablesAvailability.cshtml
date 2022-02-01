@@ -1,0 +1,63 @@
+﻿@model CoffeeShop.ViewModel.TablesAvailabilityViewModel
+@using CoffeeShop.Models
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Manage Tables Availability</title>
+</head>
+<body>
+    @Html.Partial("NavigationBar")
+    <div>
+        @using (Html.BeginForm("SubmitTablesAvailabilityModification", "Admin", FormMethod.Post))
+        {
+            <h1 style="text-align: center;">Tables Availability</h1>
+            <table style="border-collapse: collapse; width: 100%; margin-left: auto; margin-right: auto; height: 108px;" border="1">
+                <tbody>
+                    <tr style="height: 18px;">
+                        <td style="width: 12.5%; height: 18px; text-align: center;">Table/Day</td>
+                        <td style="width: 12.5%; height: 18px; text-align: center;">Sunday</td>
+                        <td style="width: 12.5%; height: 18px; text-align: center;">Monday</td>
+                        <td style="width: 12.5%; height: 18px; text-align: center;">Tuesday</td>
+                        <td style="width: 12.5%; height: 18px; text-align: center;">Wednesday</td>
+                        <td style="width: 12.5%; height: 18px; text-align: center;">Thursday</td>
+                        <td style="width: 12.5%; height: 18px; text-align: center;">Friday</td>
+                        <td style="width: 12.5%; height: 18px; text-align: center;">Saturday</td>
+                    </tr>
+                    @for (int i = 0; i < Model.vmTablesAvailability.Count; i++)
+                    {
+                        @Html.HiddenFor(m => m.vmTablesAvailability[i].Id)
+                        <tr style="height: 18px;">
+                            <td style="width: 12.5%; height: 18px; text-align: center;">#@Model.vmTablesAvailability[i].Id</td>
+                            <td style="width: 12.5%; height: 18px; text-align: center;">@Html.CheckBoxFor(m => m.vmTablesAvailability[i].Sunday)</td>
+                            <td style="width: 12.5%; height: 18px; text-align: center;">@Html.CheckBoxFor(m => m.vmTablesAvailability[i].Monday)</td>
+                            <td style="width: 12.5%; height: 18px; text-align: center;">@Html.CheckBoxFor(m => m.vmTablesAvailability[i].Tuesday)</td>
+                            <td style="width: 12.5%; height: 18px; text-align: center;">@Html.CheckBoxFor(m => m.vmTablesAvailability[i].Wednesday)</td>
+                            <td style="width: 12.5%; height: 18px; text-align: center;">@Html.CheckBoxFor(m => m.vmTablesAvailability[i].Thursday)</td>
+                            <td style="width: 12.5%; height: 18px; text-align: center;">@Html.CheckBoxFor(m => m.vmTablesAvailability[i].Friday)</td>
+                            <td style="width: 12.5%; height: 18px; text-align: center;">@Html.CheckBoxFor(m => m.vmTablesAvailability[i].Saturday)</td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+            <center><p><input type="submit" value="Save" /></p></center>
+            if (@TempData["Message"] != null)
+            {
+                <center>
+                    <div id="popupdiv" style="border: 1px solid green;">
+                        @TempData["Message"].ToString()
+                    </div>
+                </center>
+            }
+        }
+    </div>
+
+</body>
+</html>

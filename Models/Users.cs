@@ -39,6 +39,14 @@ namespace CoffeeShop.Models
         [Display(Name = "Age")]
         public int Age { get; set; }
 
+        [Required]
+        [Display(Name = "VIP")]
+        public Boolean VIP{ get; set; }
+
+        [Required]
+        [Display(Name = "VIP NUMBER")]
+        public int VIPNumber { get; set; }
+
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         [Display(Name = "Role")]
         public string Role { get; set; }
