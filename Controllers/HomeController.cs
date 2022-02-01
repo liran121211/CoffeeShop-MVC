@@ -75,14 +75,14 @@ namespace CoffeeShop.Controllers
         {
             if (isLoggenIn())
             {
-                UpdateOrderProcess("OrderStep1");
+                
                 ViewBag.Message = TempData["OrderError"];
-
                 MakeOrderViewModel order_form = new MakeOrderViewModel();
                 if (TempData["OrderData"] != null)
                     order_form = (MakeOrderViewModel)TempData["OrderData"];
 
                 order_form.CurrentDate = DateTime.Now;
+                UpdateOrderProcess("OrderStep1");
                 return View("OrderStep1", order_form);
             }
             return View("Login");
@@ -106,7 +106,7 @@ namespace CoffeeShop.Controllers
         {
             if (isLoggenIn())
             {
-                if (TempData["OrderData"] != null)
+                if (TempData["OrderData"] != null && Session["OrderSession"].ToString().CompareTo("OrderStep2") == 0)
                     order_form = (MakeOrderViewModel)TempData["OrderData"];
 
                 UpdateOrderProcess("OrderStep2");
@@ -133,10 +133,10 @@ namespace CoffeeShop.Controllers
         {
             if (isLoggenIn())
             {
-                if (TempData["OrderData"] != null)
+                if (TempData["OrderData"] != null && Session["OrderSession"].ToString().CompareTo("OrderStep3") == 0)
                     order_form = (MakeOrderViewModel)TempData["OrderData"];
-                UpdateOrderProcess("OrderStep3");
 
+                UpdateOrderProcess("OrderStep3");
                 return View("OrderStep3", order_form);
             }
             return View("Login");
@@ -165,15 +165,15 @@ namespace CoffeeShop.Controllers
         {
             if (isLoggenIn())
             {
-                if (TempData["OrderData"] != null)
+                if (TempData["OrderData"] != null && Session["OrderSession"].ToString().CompareTo("OrderStep4") == 0)
                     order_form = (MakeOrderViewModel)TempData["OrderData"];
-                UpdateOrderProcess("OrderStep4");
 
                 // Filter menus accordint to collected order_form parameters.
                 MenuDal m_dal = new MenuDal();
                 MenuProductsDal mp_dal = new MenuProductsDal();
                 ProductsDal p_dal = new ProductsDal();
                 List<Menu> all_menus = m_dal.dalMenu.ToList();
+                order_form.AvailableMenus = new List<Menu>();
 
                 // Iterate over all available menus in DB.
                 foreach (Menu menu in all_menus)
@@ -238,6 +238,8 @@ namespace CoffeeShop.Controllers
                         }
                     }
                 }
+
+                UpdateOrderProcess("OrderStep4");
                 return View("OrderStep4", order_form);
             }
             return View("Login");
@@ -273,20 +275,96 @@ namespace CoffeeShop.Controllers
                     order_form.AvailableProducts.Add((from val in p_dal.dalProducts where val.Id == mp.Product_Id select val).First());
                 }
                 order_form.LoggedInUser = RetrieveUser();
+                return OrderStep5(order_form, null);
+            }
+            return View("Login");
+        }
+
+        public ActionResult OrderStep5(MakeOrderViewModel order_form, FormCollection form_collection) // Chose Products From Menu.
+        {
+            if (isLoggenIn())
+            {
+                if (TempData["OrderData"] != null && Session["OrderSession"].ToString().CompareTo("OrderStep5") == 0)
+                    order_form = (MakeOrderViewModel)TempData["OrderData"];
+                
+                if (TempData["SortMenu"]!= null && Session["OrderSession"].ToString().CompareTo("OrderStep5") == 0)
+                {
+                    order_form = (MakeOrderViewModel)TempData["SortMenu"];
+                    order_form.AvailableProducts = SortProducts(order_form.AvailableProducts, form_collection["Sort"].ToString());
+                }
+
+                UpdateOrderProcess("OrderStep5");
                 return View("OrderStep5", order_form);
             }
             return View("Login");
         }
 
-        public ActionResult OrderStep5(MakeOrderViewModel order_form) // Chose Products From Menu.
+        public ActionResult SubmitOrderStep5(MakeOrderViewModel order_form, FormCollection form_collection)
         {
             if (isLoggenIn())
             {
-                if (TempData["OrderData"] != null)
+                if (!ValidateOrderProcess("OrderStep5"))
+                {
+                    TempData["OrderError"] = "An error occurred while processing the order, please try again...";
+                    return RedirectToAction("OrderStep1", "Home");
+                }
+
+                // Gather order_form parameters sent from view.
+                if (form_collection["SelectedMenu"] != null)
+                    order_form.SelectedMenu = (Menu)TempData["SelectedMenu"];
+                if (TempData["AvailableMenus"] != null)
+                    order_form.AvailableMenus = (List<Menu>)TempData["AvailableMenus"];
+                if (TempData["MaxPricePerProduct"] != null)
+                    order_form.MaxPricePerProduct = (double)TempData["MaxPricePerProduct"];
+                if (TempData["AvailableProducts"] != null)
+                    order_form.AvailableProducts = (List<Products>)TempData["AvailableProducts"];
+                if (TempData["LoggedInUser"] != null)
+                    order_form.LoggedInUser = (Users)TempData["LoggedInUser"];
+
+                ProductsDal p_dal = new ProductsDal();
+
+                for (int i = 3; i < form_collection.Count; i++)
+                {
+                    int product_id = int.Parse(form_collection.GetKey(i));
+                    Products temp_product = p_dal.dalProducts.Where(m => m.Id == product_id).First(); ;
+
+                    if (temp_product != null)
+                        order_form.SelectedProducts.Add(temp_product);
+                }
+                order_form.TotalOrder = 0;
+                order_form.TotalOrder = order_form.SelectedProducts.Sum(m=>m.DiscountedPrice);
+
+                return OrderStep6(order_form);
+            }
+            return View("Login");
+        }
+
+        public ActionResult OrderStep6(MakeOrderViewModel order_form) // Chose Price Range
+        {
+            if (isLoggenIn())
+            {
+                if (TempData["OrderData"] != null && Session["OrderSession"].ToString().CompareTo("OrderStep6") == 0)
                     order_form = (MakeOrderViewModel)TempData["OrderData"];
 
-                UpdateOrderProcess("OrderStep5");
-                return View("OrderStep5", order_form);
+                // Gather order_form parameters sent from view.
+                if (TempData["SelectedMenu"] != null)
+                    order_form.SelectedMenu = (Menu)TempData["SelectedMenu"];
+                if (TempData["AvailableMenus"] != null)
+                    order_form.AvailableMenus = (List<Menu>)TempData["AvailableMenus"];
+                if (TempData["MaxPricePerProduct"] != null)
+                    order_form.MaxPricePerProduct = (double)TempData["MaxPricePerProduct"];
+                if (TempData["AvailableProducts"] != null)
+                    order_form.AvailableProducts = (List<Products>)TempData["AvailableProducts"];
+                if (TempData["LoggedInUser"] != null)
+                    order_form.LoggedInUser = (Users)TempData["LoggedInUser"];
+                if (TempData["SelectedProducts"] != null)
+                    order_form.SelectedProducts = (List<Products>)TempData["SelectedProducts"];
+
+                SeatsDal s_dal = new SeatsDal();
+                order_form.AvailableSeats = s_dal.dalSeats.ToList();
+
+                UpdateOrderProcess("OrderStep6");
+                return View("OrderStep6", order_form);
             }
             return View("Login");
         }
@@ -298,32 +376,45 @@ namespace CoffeeShop.Controllers
                 if (Session["OrderSession"].ToString().CompareTo("OrderStep1") == 0)
                 {
                     UpdateOrderProcess("OrderStep1");
+                    order_form = (MakeOrderViewModel)TempData["OrderData"];
                     return RedirectToAction("Index", "Home");
                 }
 
                 if (Session["OrderSession"].ToString().CompareTo("OrderStep2") == 0)
                 {
                     UpdateOrderProcess("OrderStep1");
-                    TempData["OrderData"] = order_form;
+                    order_form = (MakeOrderViewModel)TempData["OrderData"];
                     return RedirectToAction("OrderStep1", "Home");
                 }
+
                 if (Session["OrderSession"].ToString().CompareTo("OrderStep3") == 0)
                 {
                     UpdateOrderProcess("OrderStep2");
-                    TempData["OrderData"] = order_form;
+                    order_form = (MakeOrderViewModel)TempData["OrderData"];
                     return RedirectToAction("OrderStep2", "Home");
                 }
+
                 if (Session["OrderSession"].ToString().CompareTo("OrderStep4") == 0)
                 {
                     UpdateOrderProcess("OrderStep3");
-                    TempData["OrderData"] = order_form;
+                    order_form = (MakeOrderViewModel)TempData["OrderData"];
                     return RedirectToAction("OrderStep3", "Home");
                 }
+
                 if (Session["OrderSession"].ToString().CompareTo("OrderStep5") == 0)
                 {
                     UpdateOrderProcess("OrderStep4");
-                    TempData["OrderData"] = order_form;
+                    order_form = (MakeOrderViewModel)TempData["OrderData"];
+                    TempData["SortMenu"] = null;
                     return RedirectToAction("OrderStep4", "Home");
+                }
+
+                if (Session["OrderSession"].ToString().CompareTo("OrderStep6") == 0)
+                {
+                    UpdateOrderProcess("OrderStep5");
+                    order_form = (MakeOrderViewModel)TempData["OrderData"];
+                    TempData["SortMenu"] = null;
+                    return RedirectToAction("OrderStep5", "Home");
                 }
             }
             return RedirectToAction("Login", "Home");
@@ -375,6 +466,27 @@ namespace CoffeeShop.Controllers
             return RedirectToAction("Login", "Home");
         }
 
+        private List<Products> SortProducts(List<Products> p_list, String Mode)
+        {
+            if (Mode.CompareTo("PriceAsc") == 0)
+            {
+                return p_list.OrderBy(m => m.Price).ToList();
+            }
+            if (Mode.CompareTo("PriceDesc") == 0)
+            {
+                return p_list.OrderByDescending(m => m.Price).ToList();
+            }
+            if (Mode.CompareTo("Popularity") == 0)
+            {
+                return p_list.OrderBy(m => m.Rank).ToList();
+            }
+            if (Mode.CompareTo("Discounted") == 0)
+            {
+                return p_list.Where(m => m.DiscountedPrice < m.Price).ToList();
+            }
+            return p_list;
+        }
+
         private Boolean isLoggenIn()
         {
             if (Session["Username"] != null)
@@ -396,9 +508,9 @@ namespace CoffeeShop.Controllers
         private Boolean ValidateOrderProcess(String current_state)
         {
             // If user refreshed the page during the order, return to OrderStep1.
-            if (Session["OrderSession"].ToString().CompareTo(current_state) != 0)
-                return false;
-            return true;
+            if (Session["OrderSession"].ToString().CompareTo(current_state) == 0)
+                return true;
+            return false;
         }
 
         private void UpdateOrderProcess(String current_state)

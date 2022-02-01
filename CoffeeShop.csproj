@@ -213,6 +213,8 @@
     <Content Include="Views\Home\OrderStep2.cshtml" />
     <Content Include="Views\Home\OrderStep3.cshtml" />
     <Content Include="Views\Home\OrderStep5.cshtml" />
+    <Content Include="Views\Home\temp.cshtml" />
+    <Content Include="Views\Home\OrderStep6.cshtml" />
     <None Include="Views\web.config" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>

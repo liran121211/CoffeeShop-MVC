@@ -64,6 +64,7 @@ namespace CoffeeShop.Controllers
                     db_product.Image = form_data.Image;
                     db_product.Name = form_data.Name;
                     db_product.Price = form_data.Price;
+                    db_product.DiscountedPrice = form_data.DiscountedPrice;
                     db_product.Rank = form_data.Rank;
                     dal.SaveChanges();
                     return RedirectToAction("ManageProducts", "Admin");
@@ -292,7 +293,6 @@ namespace CoffeeShop.Controllers
                     for (int i = 0; i < form_collection.Count; i++)
                     {
                         Products temp_product = null;
-                        //start i=5, skipping to the product checkboxes.
                         try
                         {
                             if (form_collection[i.ToString()] != null)

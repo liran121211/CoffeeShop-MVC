@@ -1,0 +1,118 @@
+﻿@using CoffeeShop.Models
+@model CoffeeShop.ViewModel.MakeOrderViewModel
+
+@{
+    Layout = null;
+}
+
+@functions{
+    public String ValidateProducts(Products product)
+    {
+        if (Model.LoggedInUser.Age < 18 && product.AgeLimited == true)
+            return "(Restricted By Age)";
+
+        if (product.Availability == false)
+            return "(Currently Unavailable)";
+
+        return "Validated";
+    }
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>OrderStep5</title>
+</head>
+<body>
+    <div>
+        @{bool empty_category;}
+        <h1 style="text-align: center;">@Model.SelectedMenu.Name's Menu</h1>
+        <center>
+            <table style="border-collapse: collapse; width: 50.9942%; height: 144px;" border="1">
+                <tbody>
+                    <tr style="height: 18px;">
+                        <td style="width: 4.68749%; text-align: center; height: 18px;">&nbsp;</td>
+                        <td style="width: 12.5%; text-align: center; height: 18px;">&nbsp;</td>
+                        <td style="width: 24.858%; text-align: center; height: 18px;"><h3>Drinks</h3></td>
+                        <td style="width: 8.06444%; text-align: center; height: 18px;">&nbsp;</td>
+                    </tr>
+                    @{empty_category = true;}
+                    @for (int i = 0; i < Model.AvailableProducts.Count; i++)
+                    {
+                        if (Model.AvailableProducts[i].Category.CompareTo("Drinks") == 0)
+                        {
+                            empty_category = false;
+                            String validation_response = ValidateProducts(Model.AvailableProducts[i]);
+                            if (validation_response.CompareTo("Validated") == 0)
+                            {
+                                <tr style="height: 18px;">
+                                    <td style="width: 4.68749%; text-align: center; height: 18px;">@Html.CheckBox(Model.AvailableProducts[i].Id.ToString())</td>
+                                    <td style="width: 12.5%; text-align: center; height: 18px;">PICTURE</td>
+                                    <td style="width: 24.858%; text-align: center; height: 18px;">@Model.AvailableProducts[i].Name</td>
+                                    <td style="width: 8.06444%; text-align: center; height: 18px;">@Model.AvailableProducts[i].Price ILS</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr style="height: 18px;">
+                                    <td style="width: 4.68749%; text-align: center; height: 18px;">@Html.CheckBox(Model.AvailableProducts[i].Id.ToString(), new { @disabled = "disabled" })</td>
+                                    <td style="width: 12.5%; text-align: center; height: 18px;">PICTURE</td>
+                                    <td style="width: 24.858%; text-align: center; height: 18px;">@Model.AvailableProducts[i].Name <strong style="color:orangered">@validation_response</strong></td>
+                                    <td style="width: 8.06444%; text-align: center; height: 18px;">@Model.AvailableProducts[i].Price ILS</td>
+                                </tr>
+                            }
+                        }
+                    }
+                    @if (empty_category)
+                    {
+                        <tr style="height: 18px;">
+                            <td style="width: 4.68749%; text-align: center; height: 18px;">&nbsp;</td>
+                            <td style="width: 12.5%; text-align: center; height: 18px;">&nbsp;</td>
+                            <td style="width: 24.858%; text-align: center; height: 18px;"><strong>Sorry, No products in this category...</strong></td>
+                            <td style="width: 8.06444%; text-align: center; height: 18px;">&nbsp;</td>
+                        </tr>
+                    }
+                    <tr style="height: 18px;">
+                        <td style="width: 4.68749%; text-align: center; height: 18px;">&nbsp;</td>
+                        <td style="width: 12.5%; text-align: center; height: 18px;">&nbsp;</td>
+                        <td style="width: 24.858%; text-align: center; height: 18px;">Meals</td>
+                        <td style="width: 8.06444%; text-align: center; height: 18px;">&nbsp;</td>
+                    </tr>
+                    <tr style="height: 18px;">
+                        <td style="width: 4.68749%; text-align: center; height: 18px;">V</td>
+                        <td style="width: 12.5%; text-align: center; height: 18px;">PICTURE</td>
+                        <td style="width: 24.858%; text-align: center; height: 18px;">&nbsp;</td>
+                        <td style="width: 8.06444%; text-align: center; height: 18px;">PRICE</td>
+                    </tr>
+                    <tr style="height: 18px;">
+                        <td style="width: 4.68749%; text-align: center; height: 18px;">&nbsp;</td>
+                        <td style="width: 12.5%; text-align: center; height: 18px;">&nbsp;</td>
+                        <td style="width: 24.858%; text-align: center; height: 18px;">Alcohol</td>
+                        <td style="width: 8.06444%; text-align: center; height: 18px;">&nbsp;</td>
+                    </tr>
+                    <tr style="height: 18px;">
+                        <td style="width: 4.68749%; text-align: center; height: 18px;">V</td>
+                        <td style="width: 12.5%; text-align: center; height: 18px;">PICTURE</td>
+                        <td style="width: 24.858%; text-align: center; height: 18px;">&nbsp;</td>
+                        <td style="width: 8.06444%; text-align: center; height: 18px;">PRICE</td>
+                    </tr>
+                    <tr style="height: 18px;">
+                        <td style="width: 4.68749%; text-align: center; height: 18px;">&nbsp;</td>
+                        <td style="width: 12.5%; text-align: center; height: 18px;">&nbsp;</td>
+                        <td style="width: 24.858%; text-align: center; height: 18px;">Specials</td>
+                        <td style="width: 8.06444%; text-align: center; height: 18px;">&nbsp;</td>
+                    </tr>
+                    <tr style="height: 18px;">
+                        <td style="width: 4.68749%; text-align: center; height: 18px;">V</td>
+                        <td style="width: 12.5%; text-align: center; height: 18px;">PICTURE</td>
+                        <td style="width: 24.858%; text-align: center; height: 18px;">&nbsp;</td>
+                        <td style="width: 8.06444%; text-align: center; height: 18px;">PRICE</td>
+                    </tr>
+                </tbody>
+            </table>
+        </center>
+    </div>
+</body>
+</html>

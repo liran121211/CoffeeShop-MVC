@@ -61,6 +61,29 @@
     </div>
 
     <div>
+        <center><p><h3>Alcohol</h3></p></center>
+        <table style="border-collapse: collapse; width: 100%; margin-left: auto; margin-right: auto;" border="1">
+            <tbody>
+                <tr>
+                    <td style="width: 50%; text-align: center;">Product Name</td>
+                    <td style="width: 50%; text-align: center;">Action</td>
+                </tr>
+
+                @foreach (Products product in Model.vmProducts)
+                {
+                    if (product.Category.Trim().Equals("Alcohol"))
+                    {
+                        <tr>
+                            <td style="width: 50%; text-align: center;">@product.Name</td>
+                            <td style="width: 50%; text-align: center;"><a href="@Url.Action("ModifyProduct", new { product.Id })">Edit</a>/<a href="@Url.Action("DeleteProduct", new { product.Id})">Delete</a></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div>
         <center><p><h3>Specials</h3></p></center>
         <table style="border-collapse: collapse; width: 100%; margin-left: auto; margin-right: auto;" border="1">
             <tbody>
@@ -71,7 +94,7 @@
 
                 @foreach (Products product in Model.vmProducts)
                 {
-                    if (product.Category.Trim().Equals("Special"))
+                    if (product.Category.Trim().Equals("Specials"))
                     {
                         <tr>
                             <td style="width: 50%; text-align: center;">@product.Name</td>

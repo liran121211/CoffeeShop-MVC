@@ -13,18 +13,23 @@ namespace CoffeeShop.ViewModel
         private String location;
         private String category;
         private double max_price;
+        private double total_order;
 
         private Menu selected_menu;
-        private List<Products> available_products;
         private List<Menu> available_menus;
-        private Seats seats;
+        private List<Products> selected_products;
+        private List<Products> available_products;
+        private List<Seats> available_seats;
+        private List<Seats> selected_seats;
         private Users logged_in_user;
         public MakeOrderViewModel()
         {
             this.selected_menu = null;
-            this.Seats = null;
             this.available_menus = new List<Menu>();
+            this.selected_products = new List<Products>();
             this.available_products = new List<Products>();
+            this.available_seats = new List<Seats>();
+            this.selected_seats = new List<Seats>();
             this.logged_in_user = null;
         }
 
@@ -35,7 +40,10 @@ namespace CoffeeShop.ViewModel
         public Menu SelectedMenu { get => selected_menu; set => selected_menu = value; }
         public List<Products> AvailableProducts { get => available_products; set => available_products = value; }
         public List<Menu> AvailableMenus { get => available_menus; set => available_menus = value; }
-        public Seats Seats { get => seats; set => seats = value; }
         public Users LoggedInUser { get => logged_in_user; set => logged_in_user = value; }
+        public double TotalOrder { get => total_order; set => total_order = value; }
+        public List<Products> SelectedProducts { get => selected_products; set => selected_products = value; }
+        public List<Seats> AvailableSeats { get => available_seats; set => available_seats = value; }
+        public List<Seats> SelectedSeats { get => selected_seats; set => selected_seats = value; }
     }
 }

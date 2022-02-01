@@ -6,7 +6,7 @@
 }
 
 @functions{
-    public String ValidateProducts(Products product)
+    private String ValidateProducts(Products product)
     {
         if (Model.LoggedInUser.Age < 18 && product.AgeLimited == true)
             return "(Restricted By Age)";
@@ -17,6 +17,7 @@
         return "Validated";
     }
 }
+
 <!DOCTYPE html>
 
 <html>
@@ -29,202 +30,270 @@
         @{bool empty_category;}
         <h1 style="text-align: center;">@Model.SelectedMenu.Name's Menu</h1>
         <center>
-            <table style="border-collapse: collapse; width: 500px; height: 136px;" border="1">
-                <tbody>
-                    <tr style="height: 10px;">
-                        <td style="width: 7.55208%; text-align: center; height: 10px;">&nbsp;</td>
-                        <td style="width: 92.4479%; text-align: center; height: 10px;">
-                            <h3>Drinks</h3>
-                        </td>
-                    </tr>
-                    @{empty_category = true;}
-                    @for (int i = 0; i < Model.AvailableProducts.Count; i++)
-                    {
-                        if (Model.AvailableProducts[i].Category.CompareTo("Drinks") == 0)
-                        {
-                            empty_category = false;
-                            String validation_response = ValidateProducts(Model.AvailableProducts[i]);
-                            if (validation_response.CompareTo("Validated") == 0)
-                            {
-                                <tr style="height: 18px;">
-                                    <td style="width: 7.55208%; text-align: center; height: 18px;">
-                                        @Html.CheckBox(Model.AvailableProducts[i].Id.ToString())
-                                    </td>
-                                    <td style="width: 92.4479%; text-align: center; height: 18px;">
-                                        @Model.AvailableProducts[i].Name
-                                    </td>
-                                </tr>
-                            }
-                            else
-                            {
-                                empty_category = false;
-                                <tr style="height: 18px;">
-                                    <td style="width: 7.55208%; text-align: center; height: 18px;">
-                                        @Html.CheckBox(Model.AvailableProducts[i].Id.ToString(), new { @disabled = "disabled" })
-                                    </td>
-                                    <td style="width: 92.4479%; text-align: center; height: 18px;">
-                                        @Model.AvailableProducts[i].Name <strong style="color:orangered">@validation_response</strong>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                    }
-                    @if (empty_category)
-                    {
-                        <tr style="height: 18px;">
-                            <td style="width: 7.55208%; text-align: center; height: 18px;"></td>
-                            <td style="width: 92.4479%; text-align: center; height: 18px;">
-                                Sorry, No products in this category...
-                            </td>
-                        </tr>
-                    }
+            @using (Html.BeginForm("OrderStep5", "Home", FormMethod.Post))
+            {
+                TempData["SortMenu"] = Model;
+                <strong>Sort Menu By:</strong>
+                @Html.DropDownList("Sort", new List<SelectListItem>{
+                    new SelectListItem{ Text="Ascending Price", Value = "PriceAsc" },
+                    new SelectListItem{ Text="Descending Price", Value = "PriceDesc" },
+                    new SelectListItem{ Text="Most Popular", Value = "Popularity" },
+                    new SelectListItem{ Text="Discounted Only", Value = "Discounted" },
+                    })
+                <input type="submit" value="Sort" />
+            }
+            <p></p>
+            @using (Html.BeginForm("SubmitOrderStep5", "Home", FormMethod.Post))
+            {
+                @Html.HiddenFor(m => m.CurrentDate)
+                @Html.HiddenFor(m => m.Location)
+                @Html.HiddenFor(m => m.Category)
+                TempData["AvailableMenus"] = Model.AvailableMenus;
+                TempData["AvailableProducts"] = Model.AvailableProducts;
+                TempData["MaxPricePerProduct"] = Model.MaxPricePerProduct;
+                TempData["LoggedInUser"] = Model.LoggedInUser;
+                TempData["SelectedMenu"] = Model.SelectedMenu;
 
-                    <tr style="height: 18px;">
-                        <td style="width: 7.55208%; text-align: center; height: 18px;">&nbsp;</td>
-                        <td style="width: 92.4479%; text-align: center; height: 18px;">
-                            <h3>Meals</h3>
-                        </td>
-                    </tr>
-                    @{empty_category = true;}
-                    @for (int i = 0; i < Model.AvailableProducts.Count; i++)
-                    {
-                        if (Model.AvailableProducts[i].Category.CompareTo("Meals") == 0)
+                <table style="border-collapse: collapse; width: 700px; height: 144px;" border="1">
+                    <tbody>
+                        <tr style="height: 18px;">
+                            <td style="width: 1px; text-align: center; height: 18px;">&nbsp;</td>
+                            <td style="width: 100px; text-align: center; height: 18px;">&nbsp;</td>
+                            <td style="width: 250px; text-align: center; height: 18px;"><h3>Drinks</h3></td>
+                            <td style="width: 100px; text-align: center; height: 18px;">&nbsp;</td>
+                        </tr>
+                        @{empty_category = true;}
+                        @for (int i = 0; i < Model.AvailableProducts.Count; i++)
                         {
-                            empty_category = false;
-                            String validation_response = ValidateProducts(Model.AvailableProducts[i]);
-                            if (validation_response.CompareTo("Validated") == 0)
-                            {
-                                <tr style="height: 18px;">
-                                    <td style="width: 7.55208%; text-align: center; height: 18px;">
-                                        @Html.CheckBox(Model.AvailableProducts[i].Id.ToString())
-                                    </td>
-                                    <td style="width: 92.4479%; text-align: center; height: 18px;">
-                                        @Model.AvailableProducts[i].Name
-                                    </td>
-                                </tr>
-                            }
-                            else
+                            if (Model.AvailableProducts[i].Category.CompareTo("Drinks") == 0)
                             {
                                 empty_category = false;
-                                <tr style="height: 18px;">
-                                    <td style="width: 7.55208%; text-align: center; height: 18px;">
-                                        @Html.CheckBox(Model.AvailableProducts[i].Id.ToString(), new { @disabled = "disabled" })
-                                    </td>
-                                    <td style="width: 92.4479%; text-align: center; height: 18px;">
-                                        @Model.AvailableProducts[i].Name <strong style="color:orangered">@validation_response</strong>
-                                    </td>
-                                </tr>
+                                String validation_response = ValidateProducts(Model.AvailableProducts[i]);
+                                if (validation_response.CompareTo("Validated") == 0)
+                                {
+                                    <tr style="height: 18px;">
+                                        <td style="width: 1px; text-align: center; height: 18px;"><input type="checkbox" name="@Model.AvailableProducts[i].Id" id="@Model.AvailableProducts[i].Id"></td>
+                                        <td style="width: 100px; text-align: center; height: 18px;">PICTURE</td>
+                                        <td style="width: 250px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Name</td>
+                                        @if (Model.AvailableProducts[i].Price > Model.AvailableProducts[i].DiscountedPrice)
+                                        {
+                                            <td style="width: 100px; text-align: center; height: 18px;"><strong style="color:forestgreen">@Model.AvailableProducts[i].DiscountedPrice &nbsp;</strong>  <del>@Model.AvailableProducts[i].Price</del> ILS</td>
+
+                                        }
+                                        else
+                                        {
+                                            <td style="width: 100px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Price ILS</td>
+                                        }
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr style="height: 18px;">
+                                        <td style="width: 1px; text-align: center; height: 18px;"><input type="checkbox" name="@Model.AvailableProducts[i].Id" id="@Model.AvailableProducts[i].Id" disabled="disabled"></td>
+                                        <td style="width: 100px; text-align: center; height: 18px;">PICTURE</td>
+                                        <td style="width: 250px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Name <strong style="color:orangered">@validation_response</strong></td>
+                                        @if (Model.AvailableProducts[i].Price > Model.AvailableProducts[i].DiscountedPrice)
+                                        {
+                                            <td style="width: 100px; text-align: center; height: 18px;"><strong style="color:forestgreen">@Model.AvailableProducts[i].DiscountedPrice &nbsp;</strong>  <del>@Model.AvailableProducts[i].Price</del> ILS</td>
+
+                                        }
+                                        else
+                                        {
+                                            <td style="width: 100px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Price ILS</td>
+                                        }
+                                    </tr>
+                                }
                             }
                         }
-                    }
-                    @if (empty_category)
-                    {
-                        <tr style="height: 18px;">
-                            <td style="width: 7.55208%; text-align: center; height: 18px;"></td>
-                            <td style="width: 92.4479%; text-align: center; height: 18px;">
-                                Sorry, No products in this category...
-                            </td>
-                        </tr>
-                    }
-                    <tr style="height: 18px;">
-                        <td style="width: 7.55208%; text-align: center; height: 18px;">&nbsp;</td>
-                        <td style="width: 92.4479%; text-align: center; height: 18px;">
-                            <h3>Alcohol</h3>
-                        </td>
-                    </tr>
-                    @{empty_category = true;}
-                    @for (int i = 0; i < Model.AvailableProducts.Count; i++)
-                    {
-                        if (Model.AvailableProducts[i].Category.CompareTo("Alcohol") == 0)
+                        @if (empty_category)
                         {
-                            empty_category = false;
-                            String validation_response = ValidateProducts(Model.AvailableProducts[i]);
-                            if (validation_response.CompareTo("Validated") == 0)
-                            {
-                                <tr style="height: 18px;">
-                                    <td style="width: 7.55208%; text-align: center; height: 18px;">
-                                        @Html.CheckBox(Model.AvailableProducts[i].Id.ToString())
-                                    </td>
-                                    <td style="width: 92.4479%; text-align: center; height: 18px;">
-                                        @Model.AvailableProducts[i].Name
-                                    </td>
-                                </tr>
-                            }
-                            else
+                            <tr style="height: 18px;">
+                                <td style="width: 1px; text-align: center; height: 18px;">&nbsp;</td>
+                                <td style="width: 100px; text-align: center; height: 18px;">&nbsp;</td>
+                                <td style="width: 250px; text-align: center; height: 18px;"><strong>Sorry, No products in this category...</strong></td>
+                                <td style="width: 100px; text-align: center; height: 18px;">&nbsp;</td>
+                            </tr>
+                        }
+                        <tr style="height: 18px;">
+                            <td style="width: 1px; text-align: center; height: 18px;">&nbsp;</td>
+                            <td style="width: 100px; text-align: center; height: 18px;">&nbsp;</td>
+                            <td style="width: 250px; text-align: center; height: 18px;"><h3>Meals</h3></td>
+                            <td style="width: 100px; text-align: center; height: 18px;">&nbsp;</td>
+                        </tr>
+                        @{empty_category = true;}
+                        @for (int i = 0; i < Model.AvailableProducts.Count; i++)
+                        {
+                            if (Model.AvailableProducts[i].Category.CompareTo("Meals") == 0)
                             {
                                 empty_category = false;
-                                <tr style="height: 18px;">
-                                    <td style="width: 7.55208%; text-align: center; height: 18px;">
-                                        @Html.CheckBox(Model.AvailableProducts[i].Id.ToString(), new { @disabled = "disabled" })
-                                    </td>
-                                    <td style="width: 92.4479%; text-align: center; height: 18px;">
-                                        @Model.AvailableProducts[i].Name <strong style="color:orangered">@validation_response</strong>
-                                    </td>
-                                </tr>
+                                String validation_response = ValidateProducts(Model.AvailableProducts[i]);
+                                if (validation_response.CompareTo("Validated") == 0)
+                                {
+                                    <tr style="height: 18px;">
+                                        <td style="width: 1px; text-align: center; height: 18px;"><input type="checkbox" name="@Model.AvailableProducts[i].Id" id="@Model.AvailableProducts[i].Id"></td>
+                                        <td style="width: 100px; text-align: center; height: 18px;">PICTURE</td>
+                                        <td style="width: 250px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Name</td>
+                                        @if (Model.AvailableProducts[i].Price > Model.AvailableProducts[i].DiscountedPrice)
+                                        {
+                                            <td style="width: 100px; text-align: center; height: 18px;"><strong style="color:forestgreen">@Model.AvailableProducts[i].DiscountedPrice &nbsp;</strong>  <del>@Model.AvailableProducts[i].Price</del> ILS</td>
+
+                                        }
+                                        else
+                                        {
+                                            <td style="width: 100px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Price ILS</td>
+                                        }
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr style="height: 18px;">
+                                        <td style="width: 1px; text-align: center; height: 18px;"><input type="checkbox" name="@Model.AvailableProducts[i].Id" id="@Model.AvailableProducts[i].Id" disabled="disabled"></td>
+                                        <td style="width: 100px; text-align: center; height: 18px;">PICTURE</td>
+                                        <td style="width: 250px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Name <strong style="color:orangered">@validation_response</strong></td>
+                                        @if (Model.AvailableProducts[i].Price > Model.AvailableProducts[i].DiscountedPrice)
+                                        {
+                                            <td style="width: 100px; text-align: center; height: 18px;"><strong style="color:forestgreen">@Model.AvailableProducts[i].DiscountedPrice &nbsp;</strong>  <del>@Model.AvailableProducts[i].Price</del> ILS</td>
+
+                                        }
+                                        else
+                                        {
+                                            <td style="width: 100px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Price ILS</td>
+                                        }
+                                    </tr>
+                                }
                             }
                         }
-                    }
-                    @if (empty_category)
-                    {
-                        <tr style="height: 18px;">
-                            <td style="width: 7.55208%; text-align: center; height: 18px;"></td>
-                            <td style="width: 92.4479%; text-align: center; height: 18px;">
-                                Sorry, No products in this category...
-                            </td>
-                        </tr>
-                    }
-                    <tr style="height: 18px;">
-                        <td style="width: 7.55208%; text-align: center; height: 18px;">&nbsp;</td>
-                        <td style="width: 92.4479%; text-align: center; height: 18px;">
-                            <h3>Specials</h3>
-                        </td>
-                    </tr>
-                    @{empty_category = true;}
-                    @for (int i = 0; i < Model.AvailableProducts.Count; i++)
-                    {
-                        if (Model.AvailableProducts[i].Category.CompareTo("Specials") == 0)
+                        @if (empty_category)
                         {
-                            empty_category = false;
-                            String validation_response = ValidateProducts(Model.AvailableProducts[i]);
-                            if (validation_response.CompareTo("Validated") == 0)
-                            {
-                                <tr style="height: 18px;">
-                                    <td style="width: 7.55208%; text-align: center; height: 18px;">
-                                        @Html.CheckBox(Model.AvailableProducts[i].Id.ToString())
-                                    </td>
-                                    <td style="width: 92.4479%; text-align: center; height: 18px;">
-                                        @Model.AvailableProducts[i].Name
-                                    </td>
-                                </tr>
-                            }
-                            else
+                            <tr style="height: 18px;">
+                                <td style="width: 1px; text-align: center; height: 18px;">&nbsp;</td>
+                                <td style="width: 100px; text-align: center; height: 18px;">&nbsp;</td>
+                                <td style="width: 250px; text-align: center; height: 18px;"><strong>Sorry, No products in this category...</strong></td>
+                                <td style="width: 100px; text-align: center; height: 18px;">&nbsp;</td>
+                            </tr>
+                        }
+                        <tr style="height: 18px;">
+                            <td style="width: 1px; text-align: center; height: 18px;">&nbsp;</td>
+                            <td style="width: 100px; text-align: center; height: 18px;">&nbsp;</td>
+                            <td style="width: 250px; text-align: center; height: 18px;"><h3>Alcohol</h3></td>
+                            <td style="width: 100px; text-align: center; height: 18px;">&nbsp;</td>
+                        </tr>
+                        @{empty_category = true;}
+                        @for (int i = 0; i < Model.AvailableProducts.Count; i++)
+                        {
+                            if (Model.AvailableProducts[i].Category.CompareTo("Alcohol") == 0)
                             {
                                 empty_category = false;
-                                <tr style="height: 18px;">
-                                    <td style="width: 7.55208%; text-align: center; height: 18px;">
-                                        @Html.CheckBox(Model.AvailableProducts[i].Id.ToString(), new { @disabled = "disabled" })
-                                    </td>
-                                    <td style="width: 92.4479%; text-align: center; height: 18px;">
-                                        @Model.AvailableProducts[i].Name <strong style="color:orangered">@validation_response</strong>
-                                    </td>
-                                </tr>
+                                String validation_response = ValidateProducts(Model.AvailableProducts[i]);
+                                if (validation_response.CompareTo("Validated") == 0)
+                                {
+                                    <tr style="height: 18px;">
+                                        <td style="width: 1px; text-align: center; height: 18px;"><input type="checkbox" name="@Model.AvailableProducts[i].Id" id="@Model.AvailableProducts[i].Id"></td>
+                                        <td style="width: 100px; text-align: center; height: 18px;">PICTURE</td>
+                                        <td style="width: 250px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Name</td>
+                                        @if (Model.AvailableProducts[i].Price > Model.AvailableProducts[i].DiscountedPrice)
+                                        {
+                                            <td style="width: 100px; text-align: center; height: 18px;"><strong style="color:forestgreen">@Model.AvailableProducts[i].DiscountedPrice &nbsp;</strong>  <del>@Model.AvailableProducts[i].Price</del> ILS</td>
+
+                                        }
+                                        else
+                                        {
+                                            <td style="width: 100px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Price ILS</td>
+                                        }
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr style="height: 18px;">
+                                        <td style="width: 1px; text-align: center; height: 18px;"><input type="checkbox" name="@Model.AvailableProducts[i].Id" id="@Model.AvailableProducts[i].Id" disabled="disabled"></td>
+                                        <td style="width: 100px; text-align: center; height: 18px;">PICTURE</td>
+                                        <td style="width: 250px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Name <strong style="color:orangered">@validation_response</strong></td>
+                                        @if (Model.AvailableProducts[i].Price > Model.AvailableProducts[i].DiscountedPrice)
+                                        {
+                                            <td style="width: 100px; text-align: center; height: 18px;"><strong style="color:forestgreen">@Model.AvailableProducts[i].DiscountedPrice &nbsp;</strong>  <del>@Model.AvailableProducts[i].Price</del> ILS</td>
+
+                                        }
+                                        else
+                                        {
+                                            <td style="width: 100px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Price ILS</td>
+                                        }
+                                    </tr>
+                                }
                             }
                         }
-                    }
-                    @if (empty_category)
-                    {
+                        @if (empty_category)
+                        {
+                            <tr style="height: 18px;">
+                                <td style="width: 1px; text-align: center; height: 18px;">&nbsp;</td>
+                                <td style="width: 100px; text-align: center; height: 18px;">&nbsp;</td>
+                                <td style="width: 250px; text-align: center; height: 18px;"><strong>Sorry, No products in this category...</strong></td>
+                                <td style="width: 100px; text-align: center; height: 18px;">&nbsp;</td>
+                            </tr>
+                        }
                         <tr style="height: 18px;">
-                            <td style="width: 7.55208%; text-align: center; height: 18px;"></td>
-                            <td style="width: 92.4479%; text-align: center; height: 18px;">
-                                Sorry, No products in this category...
-                            </td>
+                            <td style="width: 1px; text-align: center; height: 18px;">&nbsp;</td>
+                            <td style="width: 100px; text-align: center; height: 18px;">&nbsp;</td>
+                            <td style="width: 250px; text-align: center; height: 18px;"><h3>Specials</h3></td>
+                            <td style="width: 100px; text-align: center; height: 18px;">&nbsp;</td>
                         </tr>
-                    }
-                </tbody>
-            </table>
-            <center>
-                <p><input type="button" value="Go Back" onclick="location.href='@Url.Action("OrderStepBack", "Home", Model)'" /> <input type="submit" value="Next" /></p>
-            </center>
+                        @{empty_category = true;}
+                        @for (int i = 0; i < Model.AvailableProducts.Count; i++)
+                        {
+                            if (Model.AvailableProducts[i].Category.CompareTo("Specials") == 0)
+                            {
+                                empty_category = false;
+                                String validation_response = ValidateProducts(Model.AvailableProducts[i]);
+                                if (validation_response.CompareTo("Validated") == 0)
+                                {
+                                    <tr style="height: 18px;">
+                                        <td style="width: 1px; text-align: center; height: 18px;"><input type="checkbox" name="@Model.AvailableProducts[i].Id" id="@Model.AvailableProducts[i].Id"></td>
+                                        <td style="width: 100px; text-align: center; height: 18px;">PICTURE</td>
+                                        <td style="width: 250px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Name</td>
+                                        @if (Model.AvailableProducts[i].Price > Model.AvailableProducts[i].DiscountedPrice)
+                                        {
+                                            <td style="width: 100px; text-align: center; height: 18px;"><strong style="color:forestgreen">@Model.AvailableProducts[i].DiscountedPrice &nbsp;</strong>  <del>@Model.AvailableProducts[i].Price</del> ILS</td>
+
+                                        }
+                                        else
+                                        {
+                                            <td style="width: 100px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Price ILS</td>
+                                        }
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr style="height: 18px;">
+                                        <td style="width: 1px; text-align: center; height: 18px;"><input type="checkbox" name="@Model.AvailableProducts[i].Id" id="@Model.AvailableProducts[i].Id" disabled="disabled"></td>
+                                        <td style="width: 100px; text-align: center; height: 18px;">PICTURE</td>
+                                        <td style="width: 250px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Name <strong style="color:orangered">@validation_response</strong></td>
+                                        @if (Model.AvailableProducts[i].Price > Model.AvailableProducts[i].DiscountedPrice)
+                                        {
+                                            <td style="width: 100px; text-align: center; height: 18px;"><strong style="color:forestgreen">@Model.AvailableProducts[i].DiscountedPrice &nbsp;</strong>  <del>@Model.AvailableProducts[i].Price</del> ILS</td>
+
+                                        }
+                                        else
+                                        {
+                                            <td style="width: 100px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Price ILS</td>
+                                        }
+                                    </tr>
+                                }
+                            }
+                        }
+                        @if (empty_category)
+                        {
+                            <tr style="height: 18px;">
+                                <td style="width: 1px; text-align: center; height: 18px;">&nbsp;</td>
+                                <td style="width: 100px; text-align: center; height: 18px;">&nbsp;</td>
+                                <td style="width: 250px; text-align: center; height: 18px;"><strong>Sorry, No products in this category...</strong></td>
+                                <td style="width: 100px; text-align: center; height: 18px;">&nbsp;</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+                TempData["OrderData"] = Model;
+        <p><input type="button" value="Go Back" onclick="location.href='@Url.Action("OrderStepBack", "Home", Model)'" /> <input type="submit" value="Next" /></p>
+    }
         </center>
     </div>
 </body>

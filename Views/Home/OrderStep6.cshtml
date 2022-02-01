@@ -1,0 +1,118 @@
+﻿@model CoffeeShop.ViewModel.MakeOrderViewModel
+@using CoffeeShop.Models
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Seats</title>
+</head>
+<body>
+    <div>
+        @using (Html.BeginForm("SubmitOrderStep6", "Admin", FormMethod.Post))
+        {
+            @Html.HiddenFor(m => m.CurrentDate)
+            @Html.HiddenFor(m => m.Location)
+            @Html.HiddenFor(m => m.Category)
+            @Html.HiddenFor(m => m.TotalOrder)
+            TempData["AvailableMenus"] = Model.AvailableMenus;
+            TempData["AvailableProducts"] = Model.AvailableProducts;
+            TempData["MaxPricePerProduct"] = Model.MaxPricePerProduct;
+            TempData["LoggedInUser"] = Model.LoggedInUser;
+            TempData["SelectedMenu"] = Model.SelectedMenu;
+            TempData["SelectedProducts"] = Model.SelectedProducts;
+
+            <h1 style="text-align: center;">Choose Seats</h1>
+            <h2 style="text-align: center;">Total Order: @Model.TotalOrder ILS</h2>
+            <table style="border-collapse: collapse; width: 100%; height: 108px;" border="1">
+                <tbody>
+                    <tr style="height: 18px;">
+                        <td style="width: 16.6667%; text-align: center; height: 18px;"></td>
+                        <td style="width: 16.6667%; text-align: center; height: 18px;">Inside Table #1</td>
+                        <td style="width: 16.6667%; text-align: center; height: 18px;">Inside Table #2</td>
+                        <td style="width: 16.6667%; text-align: center; height: 18px;">Inside Table #3</td>
+                        <td style="width: 16.6667%; text-align: center; height: 18px;">Inside Table #4</td>
+                        <td style="width: 16.6667%; text-align: center; height: 18px;">Balcony Table #1</td>
+                    </tr>
+                    @{int count_row = 1; }
+
+                    @for (int i = 0; i < Model.AvailableSeats.Count; i++)
+                    {
+                        @Html.HiddenFor(m => m.AvailableSeats[i].Id)
+                        <tr style="height: 18px;">
+                            <td style="width: 16.6667%; text-align: center; height: 18px;">Chair #@count_row</td>
+                            <td style="width: 16.6667%; text-align: center; height: 18px;">
+                                @if (Model.AvailableSeats[i].Col1 == true)
+                                {
+                                    @Html.CheckBoxFor(m => m.AvailableSeats[i].Col1, new { @disabled = "disabled" })
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(m => m.AvailableSeats[i].Col1)
+                                }
+                            </td>
+                            <td style="width: 16.6667%; text-align: center; height: 18px;">
+                                @if (Model.AvailableSeats[i].Col2 == true)
+                                {
+                                    @Html.CheckBoxFor(m => m.AvailableSeats[i].Col2, new { @disabled = "disabled" })
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(m => m.AvailableSeats[i].Col2)
+                                }
+                            </td>
+                            <td style="width: 16.6667%; text-align: center; height: 18px;">
+                                @if (Model.AvailableSeats[i].Col3 == true)
+                                {
+                                    @Html.CheckBoxFor(m => m.AvailableSeats[i].Col3, new { @disabled = "disabled" })
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(m => m.AvailableSeats[i].Col3)
+                                }
+                            </td>
+                            <td style="width: 16.6667%; text-align: center; height: 18px;">
+                                @if (Model.AvailableSeats[i].Col4 == true)
+                                {
+                                    @Html.CheckBoxFor(m => m.AvailableSeats[i].Col4, new { @disabled = "disabled" })
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(m => m.AvailableSeats[i].Col4)
+                                }
+                            </td>
+                            <td style="width: 16.6667%; text-align: center; height: 18px;">
+                                @if (Model.AvailableSeats[i].Col5 == true)
+                                {
+                                    @Html.CheckBoxFor(m => m.AvailableSeats[i].Col5, new { @disabled = "disabled" })
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(m => m.AvailableSeats[i].Col5)
+                                }
+                            </td>
+                        </tr>
+                        count_row++;
+                    }
+                </tbody>
+            </table>
+            TempData["OrderData"] = Model;
+            <center><p><input type="button" value="Go Back" onclick="location.href='@Url.Action("OrderStepBack", "Home", Model)'" /> <input type="submit" value="Reserve Seats" /></p></center>
+
+            if (@TempData["Message"] != null)
+            {
+                <center>
+                    <div id="popupdiv" style="border: 1px solid green;">
+                        @TempData["Message"].ToString()
+                    </div>
+                </center>
+            }
+        }
+    </div>
+</body>
+</html>

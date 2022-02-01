@@ -22,6 +22,10 @@ namespace CoffeeShop.Models
         public double Price { get; set; }
 
         [Required]
+        [Display(Name = "Discounted Price")]
+        public double DiscountedPrice { get; set; }
+
+        [Required]
         [Display(Name = "Availability")]
         public Boolean Availability { get; set; }
 
