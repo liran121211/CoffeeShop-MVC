@@ -47,12 +47,24 @@ namespace CoffeeShop.Models
         [Display(Name = "VIP NUMBER")]
         public int VIPNumber { get; set; }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         [Display(Name = "Role")]
         public string Role { get; set; }
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+    }
+
+    public enum VIP_STATUS
+    {
+        True,
+        False
+    }
+
+    public enum USER_ROLE
+    {
+        Admin,
+        Barista,
+        Customer
     }
 }

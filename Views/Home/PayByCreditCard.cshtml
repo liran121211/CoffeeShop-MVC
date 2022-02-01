@@ -1,0 +1,77 @@
+﻿@model CoffeeShop.Models.Orders
+@{
+    Layout = null;
+}
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Einstein Kaffee - Credit Card Payment</title>
+</head>
+<body>
+    <script>
+        function RemoveText(TextFieldName) {
+            if (TextFieldName == CARD_NUMBER)
+                document.getElementById("CARD_NUMBER").value = "";
+            if (TextFieldName == EXPIRY_MONTH)
+                document.getElementById("EXPIRY_MONTH").value = "";
+            if (TextFieldName == EXPIRY_YEAR)
+                document.getElementById("EXPIRY_YEAR").value = "";
+            if (TextFieldName == CVV)
+                document.getElementById("CVV").value = "";
+        }
+    </script>
+    @Html.Partial("NavigationBar")
+    <div>
+        @using (Html.BeginForm("SubmitPayByCreditCard", "Home", FormMethod.Post))
+        {
+            TempData["OrderData"] = Model;
+            <h1 style="text-align: center;">Choose Your Way To Pay</h1>
+            <center>
+                <table style="border-collapse: collapse; width: 220px; height: 76px;" border="0">
+                    <tbody>
+                        <tr style="height: 19px;">
+                            <td style="width: 220px; height: 19px; font:50px; ">Credit Card Information<p></p></td>
+                        </tr>
+                        <tr style="height: 19px;">
+                            <td style="width: 220px; height: 19px;">@Html.TextBox("CARD_NUMBER", "4580123456789012", new { id = "CARD_NUMBER", size = "21", Style = "color:#93A0A6;", onclick = "RemoveText(CARD_NUMBER)" })</td>
+                        </tr>
+                        <tr style="height: 19px;">
+                            <td style="width: 220px; height: 19px;">@Html.TextBox("EXPIRY_MONTH", "01", new { id = "EXPIRY_MONTH", size = "7", Style = "color:#93A0A6;", onclick = "RemoveText(EXPIRY_MONTH)" }) / @Html.TextBox("EXPIRY_YEAR", "2022", new { id = "EXPIRY_YEAR", size = "7", Style = "color:#93A0A6;", onclick = "RemoveText(EXPIRY_YEAR)" })</td>
+                        </tr>
+                        <tr style="height: 19px;">
+                            <td style="width: 220px; height: 19px;">@Html.TextBox("CVV", "123", new { id = "CVV", size = "7", Style = "color:#93A0A6;", onclick = "RemoveText(CVV)" })</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p></p>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="Cancel" onclick="location.href='@Url.Action("Orders", "Account")'" />&nbsp;&nbsp;&nbsp;<input type="submit" value="Pay Now" />
+                                <p>&nbsp;&nbsp;<img src="https://camo.githubusercontent.com/b45d680d48b4b642b19ac7308567ea61f995a566d8b2a9165def53740574f3b5/687474703a2f2f73746f726167652e6a302e686e2f6372656469742d636172642d6c6f676f732d322e706e67" width="135" height="24" /></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                @if (@ViewBag.Message != null)
+                {
+                <div id="popupdiv" style="border: 1px solid red;">
+                    @ViewBag.Message
+                </div>
+                }
+
+                @if (@TempData["Message"] != null)
+                {
+                <center>
+                    <div id="popupdiv" style="border: 1px solid green;">
+                        @TempData["Message"].ToString()
+                    </div>
+                </center>
+
+                }
+            </center>
+        }
+    </div>
+</body>
+</html>

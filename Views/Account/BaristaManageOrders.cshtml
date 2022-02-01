@@ -1,0 +1,252 @@
+﻿@using CoffeeShop.Models;
+@using CoffeeShop.Dal;
+@model Tuple<List<Orders>, List<List<OrderProducts>>, List<Products>>
+
+@{ Layout = null; }
+
+@functions {
+    List<String> ParseSeats(String seats)
+    {
+        string[] seats_blocks = seats.Split(new[] { "##" }, StringSplitOptions.None);
+        List<(String Table, String Chair)> splited_seats = new List<(string Table, string Chair)>();
+        List<String> parsed_seats = new List<String>();
+        for (int i = 0; i < seats_blocks.Length; i++)
+        {
+            if (seats_blocks[i].CompareTo("") != 0)
+            {
+                splited_seats.Add((seats_blocks[i].Split('#')[0], seats_blocks[i].Split('#')[1]));
+            }
+        }
+        for (int i = 0; i < splited_seats.Count; i++)
+        {
+            parsed_seats.Add("Table #" + splited_seats[i].Table + " Chair #" + splited_seats[i].Chair);
+        }
+        return parsed_seats;
+    }
+
+    private Boolean isVip(int user_id)
+    {
+        UsersDal u_dal = new UsersDal();
+        Users db_user = u_dal.dalUsers.Where(m => m.Id == user_id).First();
+        if (db_user.VIP == true)
+        {
+            return true;
+        }
+        return false;
+    }
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Einstein Kaffee - Customers Orders</title>
+
+</head>
+<body>
+    @Html.Partial("NavigationBar")
+    <div>
+        <h1 style="text-align: center;">Orders:</h1>
+        <p>&nbsp;</p>
+        <center>
+            <table style="border-collapse: collapse; width: 100%; height: 72px;" border="1">
+                <tbody>
+                    <tr style="height: 18px;">
+                        <td style="width: 100px; height: 18px; text-align: center;">Transaction ID</td>
+                        <td style="width: 100px; height: 18px; text-align: center;">Date</td>
+                        <td style="width: 100px; height: 18px; text-align: center;">Category</td>
+                        <td style="width: 100px; height: 18px; text-align: center;">Products</td>
+                        <td style="width: 100px; height: 18px; text-align: center;">Quantity</td>
+                        <td style="width: 100px; height: 18px; text-align: center;">Total</td>
+                        <td style="width: 100px; height: 18px; text-align: center;">Location</td>
+                        <td style="width: 100px; height: 18px; text-align: center;">Seats</td>
+                        <td style="width: 100px; height: 18px; text-align: center;">Barista</td>
+                        <td style="width: 100px; height: 18px; text-align: center;">Status</td>
+                        <td style="width: 100px; height: 18px; text-align: center;">VIP</td>
+                        <td style="width: 100px; height: 18px; text-align: center;">Action</td>
+                    </tr>
+
+                    @for (int i = 0; i < Model.Item1.Count(); i++)//Orders
+                    {
+                        List<string> added_products = new List<string>();
+                <tr style="height: 18px;">
+                    <td style="width: 100px; height: 18px; text-align: center">
+                        @if (TempData["NewOrder"] != null)
+                        {
+                            if (int.Parse((String)TempData["NewOrder"]) == Model.Item1[i].Id)
+                            {
+                                @Model.Item1[i].TransactionId <strong style="color:orangered">(NEW)</strong>
+
+                            }
+                            else
+                            {
+                                @Model.Item1[i].TransactionId
+                            }
+                        }
+                        else
+                        {
+                            @Model.Item1[i].TransactionId
+                        }
+                    </td>
+                    <td style="width: 100px; height: 18px; text-align: center">@Model.Item1[i].Date</td>
+                    <td style="width: 100px; height: 18px; text-align: center">
+                        @if (Model.Item1[i].Category.CompareTo("ALL_CATEGORIES") == 0)
+                        {
+                            @:All Categories
+                        }
+
+                        else
+                        {
+                            @Model.Item1[i].Category
+                        }
+                    </td>
+                    <td style="width: 100px; height: 18px; text-align: center">
+                        @for (int j = 0; j < Model.Item2.Count(); j++)//List of OrderProducts
+                        {
+                            for (int k = 0; k < Model.Item2[j].Count(); k++)//OrderProduct
+                            {
+                                for (int m = 0; m < Model.Item3.Count(); m++)//Product
+                                {
+                                    if (Model.Item2[j][k].ProductId == Model.Item3[m].Id && Model.Item2[j][k].OrderId == Model.Item1[i].Id)
+                                    {
+                                        if (!added_products.Contains(@Model.Item3[m].Name))
+                                        {
+                                            added_products.Add(@Model.Item3[m].Name);
+                                        }
+
+                                    }
+                                }
+
+                            }
+                        }
+                        @for (int n = 0; n < added_products.Count(); n++)//Bag of Products
+                        {
+                            <p>@added_products[n].ToString()</p>
+                        }
+                    </td>
+                    <td style="width: 100px; height: 18px; text-align: center">
+
+                        @for (int v = 0; v < Model.Item2.Count(); v++)//List of OrderProducts
+                        {
+                            for (int s = 0; s < Model.Item2[v].Count(); s++)//OrderProduct
+                            {
+                                if (Model.Item2[v][s].OrderId == Model.Item1[i].Id)
+                                {
+                                    <p>(@Model.Item2[v][s].Quantity.ToString())</p>
+                                }
+                            }
+                        }
+                    </td>
+                    <td style="width: 100px; height: 18px; text-align: center">@Model.Item1[i].TotalOrder ILS</td>
+                    <td style="width: 100px; height: 18px; text-align: center">
+                        @if (Model.Item1[i].Location.CompareTo("ALL_SEATS") == 0)
+                        {
+                            @:All Seats
+                        }
+
+                        else
+                        {
+                            @Model.Item1[i].Category
+                        }
+                    </td>
+                    <td style="width: 100px; height: 18px; text-align: center">
+                        @{ List<String> parsed_seats = ParseSeats(Model.Item1[i].Seats);}
+                        @for (int k = 0; k < parsed_seats.Count; k++)
+                        {
+                            <p>@parsed_seats[k]</p>
+                        }
+                    </td>
+                    <td style="width: 100px; height: 18px; text-align: center">@Model.Item1[i].Barista</td>
+                    <td style="width: 100px; height: 18px; text-align: center">
+                        @if (Model.Item1[i].Status.CompareTo("Order_Placed") == 0)
+                        {
+                            @:Order Placed
+                        }
+                        @if (Model.Item1[i].Status.CompareTo("Manual_Payment") == 0)
+                        {
+                            @:Payment Being Verified
+                        }
+                        @if (Model.Item1[i].Status.CompareTo("Payment_Verified") == 0)
+                        {
+                            @:Payment Verified
+                        }
+                        @if (Model.Item1[i].Status.CompareTo("Processing") == 0)
+                        {
+                            @:Processing
+                        }
+                        @if (Model.Item1[i].Status.CompareTo("Ready") == 0)
+                        {
+                            @:Ready For Pickup
+                        }
+                        @if (Model.Item1[i].Status.CompareTo("Finished") == 0)
+                        {
+                            @:Finished
+                        }
+                        @if (Model.Item1[i].Status.CompareTo("Canceled") == 0)
+                        {
+                            @:Canceled
+                        }
+                    </td>
+                    <td style="width: 100px; height: 18px; text-align: center">
+                        @if (isVip(Model.Item1[i].UserId))
+                        {
+                            @: <strong style="color:forestgreen">Yes</strong>
+                        }
+                        else
+                        {
+                            @: <strong style="color:orangered">No</strong>
+                        }
+                    </td>
+                    <td style="width: 100px; height: 18px; text-align: center">
+                        @if (Model.Item1[i].Status.CompareTo("Canceled") == 0 || Model.Item1[i].Status.CompareTo("Finished") == 0 || Model.Item1[i].Status.CompareTo("Ready") == 0)
+                        {
+                            @:NA
+                        }
+                        else
+                        {
+                            if (Model.Item1[i].Barista.CompareTo("Not Yet Assigned") == 0)
+                            {
+                                <a href="@Url.Action("AssignOrder", new { Model.Item1[i].Id })">Take</a>
+                            }
+
+                            if (Model.Item1[i].Barista.CompareTo("Not Yet Assigned") != 0)//Assign order before processing it.
+                            {
+                                if (Model.Item1[i].Status.CompareTo("Manual_Payment") == 0)
+                                {
+                                    <a href="@Url.Action("VerifyCustomerPayment", new { Model.Item1[i].Id })">Confirm Payment</a>@:/<a href="@Url.Action("ModifyOrder", new { Model.Item1[i].Id })">Modify</a>
+                                }
+                                if (Model.Item1[i].Status.CompareTo("Payment_Verified") == 0)
+                                {
+                                    <a href="@Url.Action("PrepareOrder", new { Model.Item1[i].Id })">Prepare Order</a>@:/<a href="@Url.Action("ModifyOrder", new { Model.Item1[i].Id })">Modify</a>
+                                }
+                                if (Model.Item1[i].Status.CompareTo("Processing") == 0)
+                                {
+                                    <a href="@Url.Action("SetOrderReady", new { Model.Item1[i].Id })">Set Ready</a>
+                                }
+                            }
+                        }
+                    </td>
+                </tr>
+                    }
+                </tbody>
+            </table>
+            @if (@ViewBag.Message != null)
+            {
+                <div id="popupdiv" style="border: 1px solid red;">
+                    @ViewBag.Message
+                </div>
+            }
+
+            @if (@TempData["Message"] != null)
+            {
+                <center>
+                    <div id="popupdiv" style="border: 1px solid green;">
+                        @TempData["Message"].ToString()
+                    </div>
+                </center>
+
+            }
+        </center>
+    </div>
+</body>
+</html>

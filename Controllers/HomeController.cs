@@ -11,6 +11,7 @@ using System.Timers;
 
 namespace CoffeeShop.Controllers
 {
+    [RequireHttps]
     public class HomeController : System.Web.Mvc.Controller
     {
         // GET: Home
@@ -30,6 +31,7 @@ namespace CoffeeShop.Controllers
             if (ModelState.IsValid)
             {
                 UsersDal dal = new UsersDal();
+                form_data.Role = "Customer";
                 dal.dalUsers.Add(form_data);
                 dal.SaveChanges();
                 return RedirectToAction("Login", "Home");
@@ -71,6 +73,12 @@ namespace CoffeeShop.Controllers
                         Session["isAdmin"] = true;
                     else
                         Session["isAdmin"] = false;
+
+                    if (user.Role.Trim().CompareTo("Barista") == 0)
+                        Session["isBarista"] = true;
+                    else
+                        Session["isBarista"] = false;
+
                     return RedirectToAction("Index", "Account");
                 }
             }
@@ -89,7 +97,7 @@ namespace CoffeeShop.Controllers
         [HttpPost]
         public ActionResult SubmitVipLogin(Users form_data)
         {
-            if (form_data.VIPNumber.CompareTo("") == 0)
+            if (form_data.VIPNumber.ToString().CompareTo("") == 0)
             {
                 ViewBag.Message = "Did you forget to enter your VIP Card Number?";
                 return View("Login");
@@ -110,6 +118,12 @@ namespace CoffeeShop.Controllers
                         Session["isAdmin"] = true;
                     else
                         Session["isAdmin"] = false;
+
+                    if (user.Role.Trim().CompareTo("Barista") == 0)
+                        Session["isBarista"] = true;
+                    else
+                        Session["isBarista"] = false;
+
                     return RedirectToAction("Index", "Account");
                 }
             }
@@ -127,7 +141,7 @@ namespace CoffeeShop.Controllers
                     ViewBag.Message = TempData["OrderError"];
 
                 MakeOrderViewModel order_form = new MakeOrderViewModel();
-                if (TempData["OrderData"] != null)
+                if (TempData["OrderData"] != null && TempData["OrderData"] is MakeOrderViewModel)
                     order_form = (MakeOrderViewModel)TempData["OrderData"];
 
                 order_form.CurrentDate = DateTime.Now;
@@ -483,14 +497,74 @@ namespace CoffeeShop.Controllers
                 s_dal.SaveChanges();
                 order_form.SelectedSeats = selected_seats;
 
-                order_form.OrderTimer = new System.Timers.Timer(order_form.OrderTimeInterval * 60000); // This will raise the event every one minute. 6 SEC
+                order_form.OrderTimer = new Timer(order_form.OrderTimeInterval * 60000); // This will raise the event every one minute. 6 SEC
                 order_form.OrderTimer.Enabled = true;
-                order_form.OrderTimer.Elapsed += new System.Timers.ElapsedEventHandler(OrderTimer);
+                order_form.OrderTimer.Elapsed += new ElapsedEventHandler(OrderTimer);
 
-                void OrderTimer(object sender, System.Timers.ElapsedEventArgs e)
+                void OrderTimer(object sender, ElapsedEventArgs e)
                 {
                     order_form.OrderTimer.Stop();
                     ReverseSeats(order_form);
+                }
+
+                // VIP ADDONS SECTION
+                int count_drinks = 0;
+                int count_alcohol_drinks = 0;
+                double special_discount = 0.0;
+
+                if (order_form.LoggedInUser.VIP == true)
+                {
+                    List<(Products product, int quantity)> drinks = order_form.SelectedProducts.Where(m => m.Item1.Category.CompareTo("Drinks") == 0).ToList();
+                    Products min_price_drink = null;
+                    if (drinks.Count() >= 1)
+                        min_price_drink = (from val in drinks where val.product.DiscountedPrice == drinks.Min(m => m.product.DiscountedPrice) select val).First().product;
+                    foreach ((Products product, int quantity) p_q in order_form.SelectedProducts)// FREE 10TH CUP
+                        if (p_q.product.Category.CompareTo("Drinks") == 0)
+                            count_drinks += p_q.quantity;
+
+                    if (count_drinks >= 10)
+                        order_form.Promotions.Add((min_price_drink, 0, 1));
+
+
+                    if (order_form.TotalOrder > 100)// 10% OFF ORDER ABOVE SPENDING 100 ILS OR MORE.
+                    {
+                        special_discount = order_form.TotalOrder * 0.10;
+                        order_form.Promotions.Add((null, special_discount, 2));
+                    }
+
+                    List<(Products product, int quantity)> alcohol_drinks = order_form.SelectedProducts.Where(m => m.Item1.Category.CompareTo("Alcohol") == 0).ToList();
+                    Products min_price_alcohol = null;
+                    if (alcohol_drinks.Count() >= 1)
+                        min_price_alcohol = (from val in alcohol_drinks where val.product.DiscountedPrice == alcohol_drinks.Min(m => m.product.DiscountedPrice) select val).First().product;
+                    foreach ((Products product, int quantity) p_q in order_form.SelectedProducts)// FREE 3TH ALCOHOL DRINK IF 2 OR MORE BOUGTH.
+                        if (p_q.product.Category.CompareTo("Alcohol") == 0)
+                            count_alcohol_drinks += p_q.quantity;
+
+                    if (count_alcohol_drinks >= 2)
+                        order_form.Promotions.Add((min_price_alcohol, 0, 3));
+                }
+
+
+                foreach ((Products product, double discount, int prom_id) promotion in order_form.Promotions)// APPLY PROMOTIONS TO ORDER
+                {
+                    if (promotion.prom_id == 1)// APPLY 10TH FREE DRINK
+                    {
+                        Products prom_product = new Products(promotion.product);
+                        prom_product.Price = 0;
+                        prom_product.DiscountedPrice = 0;
+                        order_form.SelectedProducts.Add((prom_product, 1));
+                    }
+
+                    if (promotion.prom_id == 2)// APPLY 10% OFF ENTIRE ORDER
+                        order_form.TotalOrder = order_form.TotalOrder - promotion.discount;
+
+                    if (promotion.prom_id == 3)// APPLY 10TH FREE DRINK
+                    {
+                        Products prom_product = new Products(promotion.product);
+                        prom_product.Price = 0;
+                        prom_product.DiscountedPrice = 0;
+                        order_form.SelectedProducts.Add((prom_product, 1));
+                    }
                 }
 
                 return OrderStep7(order_form);
@@ -541,21 +615,20 @@ namespace CoffeeShop.Controllers
                     order_form.TransactionIdentifier = (String)TempData["TransactionIdentifier"];
                 if (TempData["OrderTimer"] != null)
                     order_form.OrderTimer = (Timer)TempData["OrderTimer"];
+                if (TempData["FinalOrderPrice"] != null)
+                    order_form.TotalOrder = (double)TempData["FinalOrderPrice"];
 
                 //Save all order data to db.
                 OrdersDal o_dal = new OrdersDal();
                 OrderProductsDal op_dal = new OrderProductsDal();
-                SerializedOrdersDal so_dal = new SerializedOrdersDal();
                 Orders submitted_order = new Orders();
                 String order_seats = "";
 
                 foreach ((int, int) seat in order_form.SelectedSeats)
-                {
                     order_seats += seat.Item1.ToString() + "#" + seat.Item2.ToString() + "##";
-                }
 
                 submitted_order.Barista = "Not Yet Assigned";
-                submitted_order.Status = "Pending";
+                submitted_order.Status = "Order_Placed";
                 submitted_order.Date = order_form.CurrentDate;
                 submitted_order.Location = order_form.Location;
                 submitted_order.Category = order_form.Category;
@@ -569,19 +642,28 @@ namespace CoffeeShop.Controllers
                 int order_id = o_dal.dalOrders.Attach(submitted_order).Id;
                 foreach ((Products prod, int quantity) product in order_form.SelectedProducts)
                 {
+                    if (product.prod.Price == 0)
+                    {
+                        List<OrderProducts> _op_ignored = op_dal.dalOrderProducts.Where(m => m.OrderId == submitted_order.Id).ToList();
+                        if (_op_ignored.Count > 0)
+                        {
+                            OrderProducts isExist = _op_ignored.Where(m => m.ProductId == product.prod.Id).First();
+                            if (isExist != null)
+                            {
+                                isExist.Quantity++;
+                                op_dal.SaveChanges();
+                                continue;
+                            }
+                        }
+                    }
+
                     OrderProducts op = new OrderProducts();
                     op.OrderId = order_id;
                     op.ProductId = product.prod.Id;
                     op.Quantity = product.quantity;
                     op_dal.dalOrderProducts.Add(op);
+                    op_dal.SaveChanges();
                 }
-                op_dal.SaveChanges();
-
-                SerializedOrders so = new SerializedOrders();
-                so.SerializedData = JsonConvert.SerializeObject(order_form);
-                so.Id = order_id;
-                //so_dal.dalSerializedOrders.Add(so);
-                //so_dal.SaveChanges();
 
                 order_form.OrderTimer.Stop();
                 return OrderStep8(submitted_order);
@@ -593,9 +675,142 @@ namespace CoffeeShop.Controllers
         {
             if (isLoggenIn())
             {
-                TempData = null;
-                UpdateOrderProcess("OrderStep1");
+                if (TempData["OrderData"] != null && TempData["OrderData"] is Orders)
+                    order = (Orders)TempData["OrderData"];
+
                 return View("OrderStep8", order);
+            }
+            return View("Login");
+        }
+
+        public ActionResult SubmitOrderStep8(FormCollection form_collection)
+        {
+            if (isLoggenIn())
+            {
+                Orders order = null;
+                if (form_collection["SelectedPayment"] != null)
+                {
+                    if (TempData["OrderData"] != null && TempData["OrderData"] is Orders)
+                    {
+                        order = (Orders)TempData["OrderData"];
+                        UpdateOrderProcess("OrderStep1");
+
+                        if (int.Parse(form_collection["SelectedPayment"]) == 2)
+                            return PayByCreditCard(order);
+
+                        if (int.Parse(form_collection["SelectedPayment"]) == 1)
+                        {
+                            OrdersDal o_dal = new OrdersDal();
+                            Orders cash_order = o_dal.dalOrders.Where(m => m.Id == order.Id).First();
+                            cash_order.Status = "Manual_Payment";
+                            o_dal.SaveChanges();
+                            return OrderSuccess(cash_order);
+                        }
+
+                    }
+                    else
+                        return RedirectToAction("Orders", "Account");
+                }
+                else
+                    return RedirectToAction("Orders", "Account");
+
+                return View("OrderStep8", order);
+            }
+            return View("Login");
+        }
+
+        public ActionResult PayByCreditCard(Orders order)
+        {
+            if (isLoggenIn())
+            {
+                return View("PayByCreditCard", order);
+            }
+            return View("Login");
+        }
+
+        public ActionResult SubmitPayByCreditCard(FormCollection form_collection)
+        {
+            if (isLoggenIn())
+            {
+                OrdersDal o_dal = new OrdersDal();
+                Orders order = null;
+
+                if (TempData["OrderData"] != null && TempData["OrderData"] is Orders)
+                    order = (Orders)TempData["OrderData"];
+                else
+                    return RedirectToAction("Orders", "Account");
+                try
+                {
+                    order = o_dal.dalOrders.Where(m => m.Id == order.Id).First();
+                }
+                catch (InvalidOperationException e)
+                {
+                    ViewBag.Message = "There was an error processing your order, try again...";
+                    return RedirectToAction("Orders", "Account");
+                }
+
+                String card_type = CreditCard.GetCardType(form_collection["CARD_NUMBER"].ToString()).ToString();
+                if (CreditCard.IsCardNumberValid(form_collection["CARD_NUMBER"].ToString()))
+                {
+                    order.Status = "Payment_Verified";
+                    o_dal.SaveChanges();
+                    return OrderSuccess(order);
+                }
+                else
+                {
+                    ViewBag.Message = "Invalid Credit Card Details...";
+                    return View("PayByCreditCard", order);
+                }
+            }
+            return View("Login");
+        }
+
+        public ActionResult OrderSuccess(Orders order)
+        {
+            if (isLoggenIn())
+            {
+                TempData = null;
+                UpdateOrderProcess("OrderSuccess");
+                return View("OrderSuccess", order);
+            }
+            return View("Login");
+        }
+
+        [HttpGet]
+        public ActionResult AuthorizePaypal(int id, string result)
+        {
+            if (isLoggenIn())
+            {
+                OrdersDal o_dal = new OrdersDal();
+                Orders order = o_dal.dalOrders.Where(m => m.Id == id).First();
+                if (result.CompareTo("success") == 0)
+                {
+                    order.Status = "Payment_Verified";
+                    o_dal.SaveChanges();
+                    Orders dummy_order = new Orders();
+                    dummy_order.Id = id;
+                    return OrderSuccess(dummy_order);
+                }
+
+
+                if (result.CompareTo("failed") == 0)
+                {
+                    order.Status = "Order_Placed";
+                    o_dal.SaveChanges();
+                    TempData["PayPalOrderID"] = id;
+                    return RedirectToAction("CancelOrder", "Account", id);
+                }
+            }
+            return View("Login");
+        }
+
+        public ActionResult OrderFailed(Orders order)
+        {
+            if (isLoggenIn())
+            {
+                TempData = null;
+                UpdateOrderProcess("OrderFailed");
+                return View("OrderFailed", order);
             }
             return View("Login");
         }

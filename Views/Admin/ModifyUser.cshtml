@@ -1,4 +1,5 @@
 ﻿@model CoffeeShop.Models.Users
+@using CoffeeShop.Models
 
 @{
     Layout = null;
@@ -9,14 +10,14 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Modify User Details</title>
+    <title>Einstein Kaffee - Modify User</title>
 </head>
 <body>
     @Html.Partial("NavigationBar")
     <center>
         @using (Html.BeginForm("SubmitModifyUser", "Admin", FormMethod.Post))
         {
-            @Html.HiddenFor(m=>m.Id)
+            @Html.HiddenFor(m => m.Id)
             <table cellpadding="0" cellspacing="5">
                 <tr>
                     <th colspan="2" align="center">Update Account Information</th>
@@ -52,6 +53,12 @@
                     </td>
                 </tr>
                 <tr>
+                    <td>Role: </td>
+                    <td>
+                        @Html.DropDownListFor(m => m.Role, new SelectList(Enum.GetValues(typeof(USER_ROLE))), "Select an Option")
+                    </td>
+                </tr>
+                <tr>
                     <td>Age: </td>
                     <td>
                         @Html.TextBoxFor(m => m.Age)
@@ -60,7 +67,7 @@
                 <tr>
                     <td>VIP Status: </td>
                     <td>
-                        @Html.TextBoxFor(m => m.VIP)
+                        @Html.DropDownListFor(m => m.VIP, new SelectList(Enum.GetValues(typeof(VIP_STATUS))), "Select an Option")
                     </td>
                 </tr>
                 <tr>
@@ -79,6 +86,16 @@
                 <div id="popupdiv" style="border: 1px solid red;">
                     @ViewBag.Message
                 </div>
+            }
+
+            if (@TempData["Message"] != null)
+            {
+                <center>
+                    <div id="popupdiv" style="border: 1px solid green;">
+                        @TempData["Message"].ToString()
+                    </div>
+                </center>
+
             }
         }
     </center>

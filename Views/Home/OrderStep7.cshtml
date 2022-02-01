@@ -20,6 +20,31 @@
         var finalString = new String(stringChars);
         return finalString;
     }
+
+    private List<(double original_price, double discounted_price)> CalculateOrderDiscounts()
+    {
+        double original_price = 0.0;
+        double discounted_price = 0.0;
+        List<(double original_price, double discounted_price)> calculated_prices = new List<(double original_price, double discounted_price)>();
+        for (int i = 0; i < Model.SelectedProducts.Count; i++)
+        {
+            original_price += Model.SelectedProducts[i].Item1.Price * Model.SelectedProducts[i].Item2;
+            discounted_price += Model.SelectedProducts[i].Item1.DiscountedPrice * Model.SelectedProducts[i].Item2;
+        }
+
+        calculated_prices.Add((original_price, discounted_price));
+        return calculated_prices;
+    }
+
+    private double DiscountAmount()
+    {
+        return CalculateOrderDiscounts()[0].original_price - CalculateOrderDiscounts()[0].discounted_price;
+    }
+
+    private double VIPDiscount()
+    {
+        return CalculateOrderDiscounts()[0].discounted_price - Model.TotalOrder;
+    }
 }
 <!DOCTYPE html>
 
@@ -27,7 +52,7 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>OrderStep7</title>
+    <title>Einstein Kaffee - OrderStep 7</title>
 </head>
 <body>
     @Html.Partial("NavigationBar")
@@ -120,9 +145,16 @@
                                 <ul style="list-style-type: disc;">
                                     @for (int i = 0; i < Model.SelectedProducts.Count; i++)
                                     {
+
+                                        if (Model.SelectedProducts[i].Item1.Price == 0)
                                         {
-                                            double total_product_price = Model.SelectedProducts[i].Item2 * @Model.SelectedProducts[i].Item1.Price;
-                                            <li>@Model.SelectedProducts[i].Item1.Name (@Model.SelectedProducts[i].Item2) @total_product_price ILS </li>
+                                            double total_product_price = Model.SelectedProducts[i].Item2 * @Model.SelectedProducts[i].Item1.DiscountedPrice;
+                                            <li>@Model.SelectedProducts[i].Item1.Name (@Model.SelectedProducts[i].Item2) @total_product_price ILS  <strong style="color:forestgreen">- FREE!</strong></li>
+                                        }
+                                        else
+                                        {
+                                            double total_product_price = Model.SelectedProducts[i].Item2 * @Model.SelectedProducts[i].Item1.DiscountedPrice;
+                                            <li>@Model.SelectedProducts[i].Item1.Name (@Model.SelectedProducts[i].Item2) @total_product_price ILS</li>
                                         }
                                     }
                                 </ul>
@@ -133,13 +165,48 @@
                                         <li>Row: #@{ int row = Model.SelectedSeats[i].Item1 + 1; } @row Seat: #@Model.SelectedSeats[i].Item2</li>
                                     }
                                 </ul>
-                                <p><strong><u>Total Order:</u></strong> @Model.TotalOrder ILS</p>
+                                <p><strong><u>Total Order:</u></strong></p>
+                                <ul style="list-style-type: disc;">
+                                    @if (CalculateOrderDiscounts()[0].original_price > CalculateOrderDiscounts()[0].discounted_price)
+                                    {
+                                    <li style="color:gray">Intermediate Order Amount: @CalculateOrderDiscounts()[0].original_price ILS</li>
+                                        <li style="color:forestgreen">Discount Amount: -@DiscountAmount() ILS</li>
+                                    }
+                                    else
+                                    {
+                                <li style="color:gray">Intermediate Amount: @CalculateOrderDiscounts()[0].original_price ILS</li>
+                                        <li style="color:forestgreen">Discount: -0.0 ILS</li>
+                                    }
+                                    @if (Model.LoggedInUser.VIP == true)
+                                    {
+                                    <li style="color:forestgreen">VIP Discount: -@VIPDiscount() ILS</li>
+                                    }
+                                    <li style="color:orangered">Due Amount: @Model.TotalOrder ILS</li>
+                                </ul>
                             </td>
                         </tr>
                     </tbody>
                 </table>
                 TempData["OrderData"] = Model;
+                TempData["FinalOrderPrice"] = Model.TotalOrder;
                 <p><input type="button" value="Go Back" onclick="location.href='@Url.Action("OrderStepBack", "Home", Model)'" /> <input type="submit" value="Confirm" /></p>
+            }
+            @foreach ((Products product, double discount, int prom_id) promotion in Model.Promotions)
+            {
+                if (promotion.prom_id == 1)
+                {
+                    <h3><span style="color: #339966;"><em>**<span class="VIiyi" lang="en"><span class="JLqJ4b ChMk0b" data-language-for-alternatives="en" data-language-to-translate-into="iw" data-phrase-index="0" data-number-of-phrases="1">You are eligible to a free 10th drink! <br /></span></span></em></span></h3>
+                }
+
+                if (promotion.prom_id == 2)
+                {
+                    <h3><span style="color: #339966;"><em>**<span class="VIiyi" lang="en"><span class="JLqJ4b ChMk0b" data-language-for-alternatives="en" data-language-to-translate-into="iw" data-phrase-index="0" data-number-of-phrases="1">You are eligible to a 10% discount on the total order!</span></span> </em></span></h3>
+                }
+
+                if (promotion.prom_id == 3)
+                {
+                    <h3><span style="color: #339966;"><em>**<span class="VIiyi" lang="en"><span class="JLqJ4b ChMk0b" data-language-for-alternatives="en" data-language-to-translate-into="iw" data-phrase-index="0" data-number-of-phrases="1">You are eligible to a free 10th drink! </span></span></em></span></h3>
+                }
             }
         </center>
     </div>

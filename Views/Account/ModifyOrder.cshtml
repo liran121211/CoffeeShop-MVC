@@ -1,0 +1,95 @@
+﻿@using CoffeeShop.Models;
+@using CoffeeShop.ViewModel;
+@model Orders
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Einstein Kaffee - Modify Order</title>
+</head>
+<body>
+    @Html.Partial("NavigationBar")
+    <center>
+        @using (Html.BeginForm("SubmitModifyOrder", "Account", FormMethod.Post))
+        {
+            if (Session["isBarista"] != null && (Boolean)Session["isBarista"] == true)
+            {
+                @Html.HiddenFor(m => m.Id)
+                @Html.HiddenFor(m => m.UserId)
+                @Html.HiddenFor(m => m.Date)
+                @Html.HiddenFor(m => m.TransactionId)
+                @Html.HiddenFor(m => m.Seats)
+                @Html.HiddenFor(m => m.Barista)
+                <table cellpadding="0" cellspacing="5">
+                    <tr>
+                        <th colspan="2" align="center">Modify Order</th>
+                    </tr>
+                    <tr>
+                        <td>Location: </td>
+                        <td>
+                            @Html.DropDownListFor(m => m.Location, new SelectList(Enum.GetValues(typeof(Location))), "Select an Option")
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Status: </td>
+                        <td>
+                            @Html.DropDownListFor(m => m.Status, new SelectList(Enum.GetValues(typeof(OrderStatus))), "Select an Option")
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Category: </td>
+                        <td>
+                            @Html.DropDownListFor(m => m.Category, new SelectList(Enum.GetValues(typeof(MenuCategory))), "Select an Option")
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Total Order: </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.TotalOrder)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="submit" value="Save Changes" /></td>
+                    </tr>
+                </table>
+            }
+            else
+            {
+                @Html.HiddenFor(m => m.Id)
+                @Html.HiddenFor(m => m.UserId)
+                @Html.HiddenFor(m => m.Date)
+                @Html.HiddenFor(m => m.TransactionId)
+                @Html.HiddenFor(m => m.Status)
+                @Html.HiddenFor(m => m.Barista)
+                @Html.HiddenFor(m => m.TotalOrder)
+                @Html.HiddenFor(m => m.Seats)
+                @Html.HiddenFor(m => m.Category)
+                <table cellpadding="0" cellspacing="5">
+                    <tr>
+                        <th colspan="2" align="center">Modify Order</th>
+                    </tr>
+                    <tr>
+                        <td>Location: </td>
+                        <td>
+                            @Html.DropDownListFor(m => m.Location, new SelectList(Enum.GetValues(typeof(Location))), "Select an Option")
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="submit" value="Save Changes" /></td>
+                    </tr>
+                </table>
+            }
+
+        }
+    </center>
+</body>
+</html>

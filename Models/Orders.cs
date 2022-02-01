@@ -38,8 +38,14 @@ namespace CoffeeShop.Models
 
     public enum OrderStatus
     {
-        Pending,
-        Waiting_For_Confirmation,
-        Confirmed
+        Order_Placed,
+        Manual_Payment,
+        Payment_Verified,
+        Processing,
+        Ready,
+        Finished,
+        Canceled
+
+
     }
 }

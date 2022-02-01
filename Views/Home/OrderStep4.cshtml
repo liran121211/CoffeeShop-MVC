@@ -9,7 +9,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>OrderStep4</title>
+    <title>Einstein Kaffee - OrderStep 4</title>
 </head>
 <body>
     @Html.Partial("NavigationBar")
@@ -22,7 +22,10 @@
         TempData["AvailableMenus"] = Model.AvailableMenus;
         TempData["MaxPricePerProduct"] = Model.MaxPricePerProduct;
         <div>
-            <h1 style="text-align: center;">We've Found The Best Menus Available For Your Criteria!</h1>
+            @if (Model.AvailableMenus.Count != 0)
+            {
+                <h1 style="text-align: center;">We've Found The Best Menus Available For Your Criteria!</h1>
+            }
             <center>
 
                 <table id="rptCustomers" style="height: 18px; width: 300px;" border="0">
@@ -42,7 +45,15 @@
                 </table>
                 <center>
                     @{TempData["OrderData"] = Model; }
-                    <p><input type="button" value="Go Back" onclick="location.href='@Url.Action("OrderStepBack", "Home", Model)'" /> <input type="submit" value="Next" /></p>
+                    @if (Model.AvailableMenus.Count == 0)
+                    {
+                        @:<h2 style="color:orangered">Sorry, We could not find any menu matching your criteria!</h2>
+                        <p><input type="button" value="Go Back" onclick="location.href='@Url.Action("OrderStepBack", "Home", Model)'" /></p>
+                    }
+                    else
+                    {
+                        <p><input type="button" value="Go Back" onclick="location.href='@Url.Action("OrderStepBack", "Home", Model)'" /> <input type="submit" value="Next" /></p>
+                    }
                 </center>
             </center>
         </div>

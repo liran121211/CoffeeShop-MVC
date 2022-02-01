@@ -17,6 +17,7 @@ namespace CoffeeShop.ViewModel
         private double max_price;
         private double total_order;
         private int order_time_interval; // in minutes
+        private List<(Products product, double discount, int prom_id)> vip_promotions;
 
 
         private Menu selected_menu;
@@ -36,6 +37,7 @@ namespace CoffeeShop.ViewModel
             this.available_products = new List<Products>();
             this.available_seats = new List<Seats>();
             this.selected_seats = new List<(int,int)>();
+            this.vip_promotions = new List<(Products product, double discount, int prom_id)>();
             this.logged_in_user = null;
             this.order_timer = null;
         }
@@ -56,5 +58,6 @@ namespace CoffeeShop.ViewModel
         public string TransactionIdentifier { get => transaction_identifier; set => transaction_identifier = value; }
         public Timer OrderTimer { get => order_timer; set => order_timer = value; }
         public TablesAvailabilityViewModel TablesAvailability { get => tables_availability; set => tables_availability = value; }
+        public List<(Products product, double discount, int prom_id)> Promotions { get => vip_promotions; set => vip_promotions = value; }
     }
 }

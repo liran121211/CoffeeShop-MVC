@@ -23,7 +23,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>OrderStep5</title>
+    <title>Einstein Kaffee - OrderStep 5</title>
 </head>
 <body>
     @Html.Partial("NavigationBar")
@@ -76,7 +76,7 @@
                                 {
                                     <tr style="height: 18px;">
                                         <td style="width: 1px; text-align: center; height: 18px;"><input type="checkbox" name="CHECKBOX#@Model.AvailableProducts[i].Id" id="@Model.AvailableProducts[i].Id"></td>
-                                        <td style="width: 100px; text-align: center; height: 18px;">PICTURE</td>
+                                        <td style="width: 100px; text-align: center; height: 18px;"><img src="~/@Model.AvailableProducts[i].Image" width="85" height="85" alt="Product Image"></td>
                                         <td style="width: 250px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Name</td>
                                         <td style="width: 1px; text-align: center; height: 18px;">@Html.DropDownList("DDL#" + @Model.AvailableProducts[i].Id.ToString(), new SelectList(Enum.GetValues(typeof(ProductQuantity))), "X1")</td>
                                         @if (Model.AvailableProducts[i].Price > Model.AvailableProducts[i].DiscountedPrice)
@@ -94,7 +94,7 @@
                                 {
                                     <tr style="height: 18px;">
                                         <td style="width: 1px; text-align: center; height: 18px;"><input type="checkbox" name="CHECKBOX#@Model.AvailableProducts[i].Id" id="@Model.AvailableProducts[i].Id" disabled="disabled"></td>
-                                        <td style="width: 100px; text-align: center; height: 18px;">PICTURE</td>
+                                        <td style="width: 100px; text-align: center; height: 18px;"><img src="~/@Model.AvailableProducts[i].Image" width="85" height="85" alt="Product Image"></td>
                                         <td style="width: 250px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Name <strong style="color:orangered">@validation_response</strong></td>
                                         <td style="width: 1px; text-align: center; height: 18px;">@Html.DropDownList("DDL#" + @Model.AvailableProducts[i].Id.ToString(), new SelectList(Enum.GetValues(typeof(ProductQuantity))), "X1")</td>
                                         @if (Model.AvailableProducts[i].Price > Model.AvailableProducts[i].DiscountedPrice)
@@ -138,7 +138,7 @@
                                 {
                                     <tr style="height: 18px;">
                                         <td style="width: 1px; text-align: center; height: 18px;"><input type="checkbox" name="CHECKBOX#@Model.AvailableProducts[i].Id" id="@Model.AvailableProducts[i].Id"></td>
-                                        <td style="width: 100px; text-align: center; height: 18px;">PICTURE</td>
+                                        <td style="width: 100px; text-align: center; height: 18px;"><img src="~/@Model.AvailableProducts[i].Image" width="85" height="85" alt="Product Image"></td>
                                         <td style="width: 250px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Name</td>
                                         <td style="width: 1px; text-align: center; height: 18px;">@Html.DropDownList("DDL#" + @Model.AvailableProducts[i].Id.ToString(), new SelectList(Enum.GetValues(typeof(ProductQuantity))), "X1")</td>
                                         @if (Model.AvailableProducts[i].Price > Model.AvailableProducts[i].DiscountedPrice)
@@ -156,7 +156,7 @@
                                 {
                                     <tr style="height: 18px;">
                                         <td style="width: 1px; text-align: center; height: 18px;"><input type="checkbox" name="CHECKBOX#@Model.AvailableProducts[i].Id" id="@Model.AvailableProducts[i].Id" disabled="disabled"></td>
-                                        <td style="width: 100px; text-align: center; height: 18px;">PICTURE</td>
+                                        <td style="width: 100px; text-align: center; height: 18px;"><img src="~/@Model.AvailableProducts[i].Image" width="85" height="85" alt="Product Image"></td>
                                         <td style="width: 250px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Name <strong style="color:orangered">@validation_response</strong></td>
                                         <td style="width: 1px; text-align: center; height: 18px;">@Html.DropDownList("DDL#" + @Model.AvailableProducts[i].Id.ToString(), new SelectList(Enum.GetValues(typeof(ProductQuantity))), "X1")</td>
                                         @if (Model.AvailableProducts[i].Price > Model.AvailableProducts[i].DiscountedPrice)
@@ -199,7 +199,7 @@
                                 {
                                     <tr style="height: 18px;">
                                         <td style="width: 1px; text-align: center; height: 18px;"><input type="checkbox" name="CHECKBOX#@Model.AvailableProducts[i].Id" id="@Model.AvailableProducts[i].Id"></td>
-                                        <td style="width: 100px; text-align: center; height: 18px;">PICTURE</td>
+                                        <td style="width: 100px; text-align: center; height: 18px;"><img src="~/@Model.AvailableProducts[i].Image" width="85" height="85" alt="Product Image"></td>
                                         <td style="width: 250px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Name</td>
                                         <td style="width: 1px; text-align: center; height: 18px;">@Html.DropDownList("DDL#" + @Model.AvailableProducts[i].Id.ToString(), new SelectList(Enum.GetValues(typeof(ProductQuantity))), "X1")</td>
                                         @if (Model.AvailableProducts[i].Price > Model.AvailableProducts[i].DiscountedPrice)
@@ -217,7 +217,7 @@
                                 {
                                     <tr style="height: 18px;">
                                         <td style="width: 1px; text-align: center; height: 18px;"><input type="checkbox" name="CHECKBOX#@Model.AvailableProducts[i].Id" id="@Model.AvailableProducts[i].Id" disabled="disabled"></td>
-                                        <td style="width: 100px; text-align: center; height: 18px;">PICTURE</td>
+                                        <td style="width: 100px; text-align: center; height: 18px;"><img src="~/@Model.AvailableProducts[i].Image" width="85" height="85" alt="Product Image"></td>
                                         <td style="width: 250px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Name <strong style="color:orangered">@validation_response</strong></td>
                                         <td style="width: 1px; text-align: center; height: 18px;">@Html.DropDownList("DDL#" + @Model.AvailableProducts[i].Id.ToString(), new SelectList(Enum.GetValues(typeof(ProductQuantity))), "X1")</td>
                                         @if (Model.AvailableProducts[i].Price > Model.AvailableProducts[i].DiscountedPrice)
@@ -260,7 +260,7 @@
                                 {
                                     <tr style="height: 18px;">
                                         <td style="width: 1px; text-align: center; height: 18px;"><input type="checkbox" name="CHECKBOX#@Model.AvailableProducts[i].Id" id="@Model.AvailableProducts[i].Id"></td>
-                                        <td style="width: 100px; text-align: center; height: 18px;">PICTURE</td>
+                                        <td style="width: 100px; text-align: center; height: 18px;"><img src="~/@Model.AvailableProducts[i].Image" width="85" height="85" alt="Product Image"></td>
                                         <td style="width: 250px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Name</td>
                                         <td style="width: 1px; text-align: center; height: 18px;">@Html.DropDownList("DDL#" + @Model.AvailableProducts[i].Id.ToString(), new SelectList(Enum.GetValues(typeof(ProductQuantity))), "X1")</td>
                                         @if (Model.AvailableProducts[i].Price > Model.AvailableProducts[i].DiscountedPrice)
@@ -278,7 +278,7 @@
                                 {
                                     <tr style="height: 18px;">
                                         <td style="width: 1px; text-align: center; height: 18px;"><input type="checkbox" name="CHECKBOX#@Model.AvailableProducts[i].Id" id="@Model.AvailableProducts[i].Id" disabled="disabled"></td>
-                                        <td style="width: 100px; text-align: center; height: 18px;">PICTURE</td>
+                                        <td style="width: 100px; text-align: center; height: 18px;"><img src="~/@Model.AvailableProducts[i].Image" width="85" height="85" alt="Product Image"></td>
                                         <td style="width: 250px; text-align: center; height: 18px;">@Model.AvailableProducts[i].Name <strong style="color:orangered">@validation_response</strong></td>
                                         <td style="width: 1px; text-align: center; height: 18px;">@Html.DropDownList("DDL#" + @Model.AvailableProducts[i].Id.ToString(), new SelectList(Enum.GetValues(typeof(ProductQuantity))), "X1")</td>
                                         @if (Model.AvailableProducts[i].Price > Model.AvailableProducts[i].DiscountedPrice)

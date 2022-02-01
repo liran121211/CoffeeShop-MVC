@@ -9,7 +9,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>ManageProducts</title>
+    <title>Einstein Kaffee - Manage Users</title>
 </head>
 <body>
     @Html.Partial("NavigationBar")
@@ -31,7 +31,7 @@
                 <td style="width: 25%; text-align: center;">@user.FirstName @user.LastName</td>
                 <td style="width: 25%; text-align: center;">@user.Username</td>
                 <td style="width: 25%; text-align: center;">@user.Role</td>
-                <td style="width: 25%; text-align: center;"><a href="@Url.Action("ModifyUser", new { user.Id})">Edit</a></td>
+                <td style="width: 25%; text-align: center;"><a href="@Url.Action("ModifyUser","Admin", new { user.Id})">Edit</a></td>
             </tr>
 
                 }

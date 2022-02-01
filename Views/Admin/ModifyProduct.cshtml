@@ -10,7 +10,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Modify Product</title>
+    <title>Einstein Kaffee - Modify Product</title>
 </head>
 <body>
     @Html.Partial("NavigationBar")
@@ -21,7 +21,7 @@
             @Html.HiddenFor(m => m.Image)
             <table cellpadding="0" cellspacing="5">
                 <tr>
-                    <th colspan="2" align="center">Modify Product</th>
+                    <th colspan="2" align="center"><p/><img src="~/@Model.Image" width="120" height="120" alt="Product Image"></th>
                 </tr>
                 <tr>
                     <td>Product Name: </td>
@@ -70,6 +70,22 @@
                     <td><input type="submit" value="Save Changes" /></td>
                 </tr>
             </table>
+            if (@ViewBag.Message != null)
+            {
+                <div id="popupdiv" style="border: 1px solid red;">
+                    @ViewBag.Message
+                </div>
+            }
+
+            if (@TempData["Message"] != null)
+            {
+                <center>
+                    <div id="popupdiv" style="border: 1px solid green;">
+                        @TempData["Message"].ToString()
+                    </div>
+                </center>
+
+            }
         }
     </center>
 </body>

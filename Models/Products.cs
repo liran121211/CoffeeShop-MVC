@@ -44,6 +44,23 @@ namespace CoffeeShop.Models
         [Required]
         [Display(Name = "Category")]
         public string Category { get; set; }
+
+        public Products(Products p) //COPY CONSTRUCTOR
+        {
+            this.DiscountedPrice = p.DiscountedPrice;
+            this.Availability = p.Availability;
+            this.AgeLimited = p.AgeLimited;
+            this.Category = p.Category;
+            this.Price = p.Price;
+            this.Image = p.Image;
+            this.Rank = p.Rank;
+            this.Name = p.Name;
+            this.Id = p.Id;
+        }
+
+        public Products() //PARAMETERLESS CONSTRUCTOR (DEFAULT CONSTRUCTOR)
+        {
+        }
     }
 
     public enum ProductBoolean

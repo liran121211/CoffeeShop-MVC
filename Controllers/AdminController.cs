@@ -69,7 +69,8 @@ namespace CoffeeShop.Controllers
                     db_product.Rank = form_data.Rank;
                     db_product.Category = form_data.Category;
                     dal.SaveChanges();
-                    return RedirectToAction("ManageProducts", "Admin");
+                    TempData["Message"] = "Product Modification Saved Successfully!";
+                    return RedirectToAction("ModifyProduct/" + form_data.Id.ToString(), "Admin", ViewBag.Message);
                 }
                 else
                 {
@@ -439,8 +440,9 @@ namespace CoffeeShop.Controllers
             {
                 UsersDal u_dal = new UsersDal();
                 Users user = u_dal.dalUsers.Where(m => m.Id == id).First();
-                View("ModifyUser", user);
+                return View("ModifyUser", user);
             }
+
             return RedirectToAction("Index", "Home");
         }
 
@@ -455,17 +457,21 @@ namespace CoffeeShop.Controllers
                     Users db_user = dal.dalUsers.Where(m => m.Id == form_data.Id).First();
                     db_user.Username = form_data.Username;
                     db_user.Email = form_data.Email;
+                    db_user.FirstName = form_data.FirstName;
+                    db_user.LastName = form_data.LastName;
                     db_user.Password = form_data.Password;
                     db_user.Age = form_data.Age;
                     db_user.VIP = form_data.VIP;
+                    db_user.Role = form_data.Role;
                     db_user.VIPNumber = form_data.VIPNumber;
                     dal.SaveChanges();
-                    return RedirectToAction("Login", "Home");
+                    TempData["Message"] = "User Modification Saved Successfully!";
+                    return RedirectToAction("ModifyUser/"+ form_data.Id.ToString(), "Admin" , ViewBag.Message);
                 }
                 else
                 {
                     ViewBag.Message = "The information given is invalid!";
-                    return View("UpdateDetails", form_data);
+                    return View("ModifyUser", form_data);
                 }
             }
             return RedirectToAction("Login", "Home");

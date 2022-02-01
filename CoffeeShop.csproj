@@ -19,7 +19,7 @@
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
-    <IISExpressSSLPort />
+    <IISExpressSSLPort>44369</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
@@ -135,7 +135,6 @@
     <Compile Include="Dal\MenuDal.cs" />
     <Compile Include="Dal\MenuProductsDal.cs" />
     <Compile Include="Dal\OrderProductsDal.cs" />
-    <Compile Include="Dal\SerializedOrdersDal.cs" />
     <Compile Include="Dal\OrdersDal.cs" />
     <Compile Include="Dal\ProductsDal.cs" />
     <Compile Include="Dal\SeatsDal.cs" />
@@ -149,11 +148,11 @@
       <DependentUpon>202112101550181_InitialCreate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\CreditCard.cs" />
     <Compile Include="Models\Menu.cs" />
     <Compile Include="Models\MenuProducts.cs" />
     <Compile Include="Models\OrderProducts.cs" />
     <Compile Include="Models\Orders.cs" />
-    <Compile Include="Models\SerializedOrders.cs" />
     <Compile Include="Models\Products.cs" />
     <Compile Include="Models\Seats.cs" />
     <Compile Include="Models\TablesAvailability.cs" />
@@ -176,6 +175,11 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Images\Cappuccino.png" />
+    <Content Include="Content\Images\espresso.jpg" />
+    <Content Include="Content\Images\Macchiato.jpg" />
+    <Content Include="Content\Images\main_logo.svg" />
+    <Content Include="Content\Images\Pretzalah.png" />
     <Content Include="Content\passwordsValidation.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -221,10 +225,15 @@
     <Content Include="Views\Home\OrderStep6.cshtml" />
     <Content Include="Views\Home\OrderStep7.cshtml" />
     <Content Include="Views\Admin\ManageTablesAvailability.cshtml" />
-    <Content Include="Views\Home\OrderStep8.cshtml" />
+    <Content Include="Views\Home\OrderSuccess.cshtml" />
     <Content Include="Views\Shared\NavigationBar.cshtml" />
     <Content Include="Views\Admin\ManageUsers.cshtml" />
     <Content Include="Views\Admin\ModifyUser.cshtml" />
+    <Content Include="Views\Account\BaristaManageOrders.cshtml" />
+    <Content Include="Views\Home\OrderStep8.cshtml" />
+    <Content Include="Views\Home\PayByCreditCard.cshtml" />
+    <Content Include="Views\Home\OrderFailed.cshtml" />
+    <Content Include="Views\Account\ModifyOrder.cshtml" />
     <None Include="Views\web.config" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
@@ -275,7 +284,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>53253</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:53253/</IISUrl>
+          <IISUrl>https://localhost:44369/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

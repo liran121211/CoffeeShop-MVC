@@ -46,6 +46,7 @@ namespace CoffeeShop.Models
     {
         BreakFast,
         Business,
-        Alcohol
+        Alcohol,
+        Dinner
     }
 }

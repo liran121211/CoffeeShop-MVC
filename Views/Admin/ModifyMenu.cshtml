@@ -11,7 +11,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Modify Order</title>
+    <title>Einstein Kaffee - Modify Menu</title>
 </head>
 <body>
     @Html.Partial("NavigationBar")
@@ -90,6 +90,23 @@
                     <td><input type="submit" value="Save Changes" /></td>
                 </tr>
             </table>
+            if (@ViewBag.Message != null)
+            {
+                <div id="popupdiv" style="border: 1px solid red;">
+                    @ViewBag.Message
+                </div>
+            }
+
+            if (@TempData["Message"] != null)
+            {
+                <center>
+                    <div id="popupdiv" style="border: 1px solid green;">
+                        @TempData["Message"].ToString()
+                    </div>
+                </center>
+
+            }
+        }
         }
     </center>
 </body>
