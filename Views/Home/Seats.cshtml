@@ -1,0 +1,96 @@
+﻿@model CoffeeShop.ViewModel.SeatsViewModel
+@using CoffeeShop.Models
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Seats</title>
+</head>
+<body>
+    <div>
+        @using (Html.BeginForm("SubmitSeats", "Home", FormMethod.Post))
+        {
+            <h1 style="text-align: center;">Choose Seats</h1>
+            <table style="border-collapse: collapse; width: 100%; height: 108px;" border="1">
+                <tbody>
+                    <tr style="height: 18px;">
+                        <td style="width: 16.6667%; text-align: center; height: 18px;"></td>
+                        <td style="width: 16.6667%; text-align: center; height: 18px;">Inside</td>
+                        <td style="width: 16.6667%; text-align: center; height: 18px;">Inside</td>
+                        <td style="width: 16.6667%; text-align: center; height: 18px;">Inside</td>
+                        <td style="width: 16.6667%; text-align: center; height: 18px;">Inside</td>
+                        <td style="width: 16.6667%; text-align: center; height: 18px;">Balcony</td>
+                    </tr>
+                    @{int count_row = 1; }
+
+                    @for (int i = 0; i < Model.vmSeats.Count; i++)
+                    {
+                        @Html.HiddenFor(m => m.vmSeats[i].Id)
+                        <tr style="height: 18px;">
+                            <td style="width: 16.6667%; text-align: center; height: 18px;">Row @count_row</td>
+                            <td style="width: 16.6667%; text-align: center; height: 18px;">
+                                @if (Model.vmSeats[i].Col1 == true)
+                                {
+                                    @Html.CheckBoxFor(m => m.vmSeats[i].Col1, new { disabled = "disabled" })
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(m => m.vmSeats[i].Col1)
+                                }
+                            </td>
+                            <td style="width: 16.6667%; text-align: center; height: 18px;">
+                                @if (Model.vmSeats[i].Col2 == true)
+                                {
+                                    @Html.CheckBoxFor(m => m.vmSeats[i].Col2, new { disabled = "disabled" })
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(m => m.vmSeats[i].Col2)
+                                }
+                            </td>
+                            <td style="width: 16.6667%; text-align: center; height: 18px;">
+                                @if (Model.vmSeats[i].Col3 == true)
+                                {
+                                    @Html.CheckBoxFor(m => m.vmSeats[i].Col3, new { disabled = "disabled" })
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(m => m.vmSeats[i].Col3)
+                                }
+                            </td>
+                            <td style="width: 16.6667%; text-align: center; height: 18px;">
+                                @if (Model.vmSeats[i].Col4 == true)
+                                {
+                                    @Html.CheckBoxFor(m => m.vmSeats[i].Col4, new { disabled = "disabled" })
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(m => m.vmSeats[i].Col4)
+                                }
+                            </td>
+                            <td style="width: 16.6667%; text-align: center; height: 18px;">
+                                @if (Model.vmSeats[i].Col5 == true)
+                                {
+                                    @Html.CheckBoxFor(m => m.vmSeats[i].Col5, new { disabled = "disabled" })
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(m => m.vmSeats[i].Col5)
+                                }
+                            </td>
+                        </tr>
+                        count_row++;
+                    }
+                </tbody>
+            </table>
+            <center><p><input type="submit" value="Reserve Seats" /></p></center>
+    }
+</div>
+</body>
+</html>

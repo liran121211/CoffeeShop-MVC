@@ -1,0 +1,48 @@
+﻿@using CoffeeShop.Models
+@model CoffeeShop.ViewModel.MakeOrderViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>OrderStep4</title>
+</head>
+<body>
+    @using (Html.BeginForm("SubmitOrderStep4", "Home", FormMethod.Post))
+    {
+        @Html.HiddenFor(m => m.CurrentDate)
+        @Html.HiddenFor(m => m.Location)
+        @Html.HiddenFor(m => m.Category)
+        TempData["AvailableMenus"] = Model.AvailableMenus;
+        TempData["MaxPricePerProduct"] = Model.MaxPricePerProduct;
+        <div>
+            <h1 style="text-align: center;">We've Found The Best Menus Available For Your Criteria!</h1>
+            <center>
+
+                <table id="rptCustomers" style="height: 18px; width: 300px;" border="0">
+                    <tbody>
+                        @for (int i = 0; i < Model.AvailableMenus.Count; i++)
+                        {
+                            <tr style="height: 18px;">
+                                <td style="width: 10%; text-align: right; height: 18px; padding-left: 1px; ">
+                                    @Html.RadioButton(Model.AvailableMenus[i].Name, Model.AvailableMenus[i].Id, new { id = Model.AvailableMenus[i].Name, @Name = "SelectedMenu" })
+                                </td>
+                                <td style="width: 10%; text-align: left; height: 18px;  padding-left: 1px; ">
+                                    @Model.AvailableMenus[i].Name.ToString()
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <center>
+                    <p><input type="button" value="Go Back" onclick="location.href='@Url.Action("OrderStepBack", "Home", Model)'" /> <input type="submit" value="Next" /></p>
+                </center>
+            </center>
+        </div>
+    }
+</body>
+</html>

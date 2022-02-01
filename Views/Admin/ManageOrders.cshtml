@@ -1,0 +1,67 @@
+﻿@using CoffeeShop.ViewModel;
+@using CoffeeShop.Models;
+@model Tuple<OrdersViewModel, OrderProductsViewModel, ProductsViewModel>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ManageProducts</title>
+</head>
+<body>
+    <div>
+        <h1 style="text-align: center;">Manage Orders</h1>
+        <center><p><h3>Drinks</h3></p></center>
+        <table style="border-collapse: collapse; width: 100%; margin-left: auto; margin-right: auto;" border="1">
+            <tbody>
+                <tr>
+                    <td style="width: 14.28%; text-align: center;">Order ID</td>
+                    <td style="width: 14.28%; text-align: center;">Transaction ID</td>
+                    <td style="width: 14.28%; text-align: center;">User ID</td>
+                    <td style="width: 14.28%; text-align: center;">Total (ILS)</td>
+                    <td style="width: 14.28%; text-align: center;">Barista</td>
+                    <td style="width: 14.28%; text-align: center;">Status</td>
+                    <td style="width: 14.28%; text-align: center;">Action</td>
+                </tr>
+
+                @foreach (Orders order in Model.Item1.vmOrders)
+                {
+                    double order_sum = 0;
+                    <tr>
+                        <td style="width: 14.28%; text-align: center;">@order.Id</td>
+                        <td style="width: 14.28%; text-align: center;">@order.TransactionId</td>
+                        <td style="width: 14.28%; text-align: center;">@order.UserId</td>
+                        <td style="width: 14.28%; text-align: center;">
+                            @for (int i = 0; i < Model.Item2.vmNestedOrderProducts.Count; i++) // Iterate List OrderProducts
+                            {
+ 
+
+                                for (int j = 0; j < Model.Item2.vmNestedOrderProducts[i].Count; j++) // Iterate OrderProducts Object
+                                {
+                                    for (int k = 0; k < Model.Item3.vmProducts.Count; k++) // Iterate Products
+                                    {
+                                        if (Model.Item3.vmProducts[k].Id == Model.Item2.vmNestedOrderProducts[i][j].ProductId && Model.Item2.vmNestedOrderProducts[i][j].OrderId == order.Id)
+                                        {
+                                            order_sum = order_sum + (Model.Item3.vmProducts[k].Price * Model.Item2.vmNestedOrderProducts[i][j].Quantity);
+                                        }
+                                    }
+                                }
+                            }
+                            @order_sum.ToString()
+                        </td>
+                        <td style="width: 14.28%; text-align: center;">@order.Barista</td>
+                        <td style="width: 14.28%; text-align: center;">@order.Status</td>
+                        <td style="width: 14.28%; text-align: center;"><a href="@Url.Action("ModifyOrder", new { order.Id})">Edit</a></td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

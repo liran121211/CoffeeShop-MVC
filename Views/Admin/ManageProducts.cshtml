@@ -1,0 +1,86 @@
+﻿@model CoffeeShop.ViewModel.ProductsViewModel
+@using CoffeeShop.Models
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ManageProducts</title>
+</head>
+<body>
+    <div>
+        <h1 style="text-align: center;">Manage Products</h1>
+        <center><p><h3>Drinks</h3></p></center>
+        <table style="border-collapse: collapse; width: 100%; margin-left: auto; margin-right: auto;" border="1">
+            <tbody>
+                <tr>
+                    <td style="width: 50%; text-align: center;">Product Name</td>
+                    <td style="width: 50%; text-align: center;">Action</td>
+                </tr>
+
+                @foreach (Products product in Model.vmProducts)
+                {
+                    if (product.Category.Trim().Equals("Drinks"))
+                    {
+                        <tr>
+                            <td style="width: 50%; text-align: center;">@product.Name</td>
+                            <td style="width: 50%; text-align: center;"><a href="@Url.Action("ModifyProduct", new { product.Id})">Edit</a>/<a href="@Url.Action("DeleteProduct", new { product.Id})">Delete</a></td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+
+    <div>
+        <center><p><h3>Meals</h3></p></center>
+        <table style="border-collapse: collapse; width: 100%; margin-left: auto; margin-right: auto;" border="1">
+            <tbody>
+                <tr>
+                    <td style="width: 50%; text-align: center;">Product Name</td>
+                    <td style="width: 50%; text-align: center;">Action</td>
+                </tr>
+
+                @foreach (Products product in Model.vmProducts)
+                {
+                    if (product.Category.Trim().Equals("Meals"))
+                    {
+                        <tr>
+                            <td style="width: 50%; text-align: center;">@product.Name</td>
+                            <td style="width: 50%; text-align: center;"><a href="@Url.Action("ModifyProduct", new { product.Id })">Edit</a>/<a href="@Url.Action("DeleteProduct", new { product.Id})">Delete</a></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div>
+        <center><p><h3>Specials</h3></p></center>
+        <table style="border-collapse: collapse; width: 100%; margin-left: auto; margin-right: auto;" border="1">
+            <tbody>
+                <tr>
+                    <td style="width: 50%; text-align: center;">Product Name</td>
+                    <td style="width: 50%; text-align: center;">Action</td>
+                </tr>
+
+                @foreach (Products product in Model.vmProducts)
+                {
+                    if (product.Category.Trim().Equals("Special"))
+                    {
+                        <tr>
+                            <td style="width: 50%; text-align: center;">@product.Name</td>
+                            <td style="width: 50%; text-align: center;"><a href="@Url.Action("ModifyProduct", new { product.Id })">Edit</a>/<a href="@Url.Action("DeleteProduct", new { product.Id})">Delete</a></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

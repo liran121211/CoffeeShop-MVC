@@ -1,0 +1,44 @@
+﻿@using CoffeeShop.Models
+@model CoffeeShop.ViewModel.MenuViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ManageProducts</title>
+</head>
+<body>
+    <div>
+        <h1 style="text-align: center;">Manage Menus</h1>
+        <table style="border-collapse: collapse; width: 100%; margin-left: auto; margin-right: auto;" border="1">
+            <tbody>
+                <tr>
+                    <td style="width: 50.00%; text-align: center;">Name</td>
+                    <td style="width: 50.00%; text-align: center;">Action</td>
+                </tr>
+
+                @foreach (Menu menu in Model.vmMenus)
+                {
+                    <tr>
+                        @if (menu.Listed == true)
+                        {
+                            <td style="width: 50.00%; text-align: center;">@menu.Name <strong style="color:orangered">(Active)</strong></td>
+                        }
+                        else
+                        {
+                            <td style="width: 50.00%; text-align: center;">@menu.Name</td>
+                        }
+                        <td style="width: 50.00%; text-align: center;"><a href="@Url.Action("ModifyMenu", new { menu.Id})">Edit/<a href="@Url.Action("DeleteMenu", new { menu.Id})">Delete</a></a></td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

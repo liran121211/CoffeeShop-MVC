@@ -1,0 +1,43 @@
+﻿@model CoffeeShop.ViewModel.MakeOrderViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>OrderStep3</title>
+</head>
+<body>
+    @using (Html.BeginForm("SubmitOrderStep3", "Home", FormMethod.Post))
+    {
+        @Html.HiddenFor(m => m.CurrentDate)
+        @Html.HiddenFor(m => m.Location)
+        @Html.HiddenFor(m => m.Category)
+        <div>
+            <h1 style="text-align: center;">How Much Would You Like To Pay For The Order?</h1>
+            <center>
+                <table style="border-collapse: collapse; width: 400px; height: 36px;" border="0">
+                    <tbody>
+                        <tr style="height: 18px;">
+                            <td style="width: 50%; text-align: center; height: 18px;">My Budget:</td>
+                            <td style="width: 50%; text-align: left; height: 18px;">
+                                @Html.TextBoxFor(m => m.MaxPricePerProduct, "0.0", new { style = "width:50px;" })
+                            </td>
+                        </tr>
+                        <tr style="height: 18px;">
+                            <td style="width: 50%; text-align: center; height: 18px;">Skip (Unlimited Budget)</td>
+                            <td style="width: 50%; text-align: left; height: 18px;">@Html.RadioButton("UNLIMITED_BUDGET", new { })</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </center>
+            <center>
+                <p><input type="button" value="Go Back" onclick="location.href='@Url.Action("OrderStepBack", "Home", Model)'" /> <input type="submit" value="Next" /></p>
+            </center>
+        </div>
+    }
+</body>
+</html>

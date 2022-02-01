@@ -1,0 +1,48 @@
+﻿@using CoffeeShop.Models;
+@using CoffeeShop.ViewModel;
+@model AdminOrdersSectionViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Modify Order</title>
+</head>
+<body>
+    <center>
+        @using (Html.BeginForm("SubmitOrderModification", "Admin", FormMethod.Post))
+        {
+            @Html.HiddenFor(m => m.O.Id)
+            @Html.HiddenFor(m => m.O.UserId)
+            @Html.HiddenFor(m => m.O.Date)
+            @Html.HiddenFor(m => m.O.TransactionId)
+            <table cellpadding="0" cellspacing="5">
+                <tr>
+                    <th colspan="2" align="center">Modify Order</th>
+                </tr>
+                <tr>
+                    <td>Status: </td>
+                    <td>
+                        @Html.DropDownListFor(m => m.O.Status, new SelectList(Enum.GetValues(typeof(OrderStatus))), "Select an Option")
+                    </td>
+                </tr>
+                <tr>
+                    <td>Barista: </td>
+                    <td>
+                        @Html.DropDownListFor(m => m.O.Barista, Model.Sli, "Select an Option"))
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><input type="submit" value="Save Changes" /></td>
+                </tr>
+            </table>
+        }
+    </center>
+</body>
+</html>

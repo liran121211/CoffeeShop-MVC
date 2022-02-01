@@ -1,0 +1,81 @@
+﻿@using CoffeeShop.Models;
+@model Tuple<List<Orders>, List<List<OrderProducts>>, List<Products>>
+
+@{ Layout = null; }
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Orders</title>
+
+</head>
+<body>
+    <div>
+        <h1 style="text-align: center;">Orders:</h1>
+        <p>&nbsp;</p>
+        <table style="border-collapse: collapse; width: 100%; height: 72px;" border="1">
+            <tbody>
+                <tr style="height: 18px;">
+                    <td style="width: 12.5%; height: 18px; text-align: center;">Order ID</td>
+                    <td style="width: 12.5%; height: 18px; text-align: center;">Product</td>
+                    <td style="width: 12.5%; height: 18px; text-align: center;">Quantity</td>
+                    <td style="width: 12.5%; height: 18px; text-align: center;">Barista</td>
+                    <td style="width: 12.5%; height: 18px; text-align: center;">Status</td>
+                    <td style="width: 12.5%; height: 18px; text-align: center;">Date</td>
+                </tr>
+
+
+                @for (int i = 0; i < Model.Item1.Count(); i++)//Orders
+                {
+                    List<string> added_products = new List<string>();
+            <tr style="height: 18px;">
+                <td style="width: 12.5%; height: 18px; text-align: center">@Model.Item1[i].Id</td>
+                <td style="width: 12.5%; height: 18px; text-align: center">
+                    @for (int j = 0; j < Model.Item2.Count(); j++)//List of OrderProducts
+                    {
+                        for (int k = 0; k < Model.Item2[j].Count(); k++)//OrderProduct
+                        {
+                            for (int m = 0; m < Model.Item3.Count(); m++)//Product
+                            {
+                                if (Model.Item2[j][k].ProductId == Model.Item3[m].Id && Model.Item2[j][k].OrderId == Model.Item1[i].Id)
+                                {
+                                    if (!added_products.Contains(@Model.Item3[m].Name))
+                                    {
+                                        added_products.Add(@Model.Item3[m].Name);
+                                    }
+
+                                }
+                            }
+
+                        }
+                    }
+                    @for (int n = 0; n < added_products.Count(); n++)//Bag of Products
+                    {
+                        <p>@added_products[n].ToString()</p>
+                    }
+                </td>
+                <td style="width: 12.5%; height: 18px; text-align: center">
+                    @for (int v = 0; v < Model.Item2.Count(); v++)//List of OrderProducts
+                    {
+                        for (int s = 0; s < Model.Item2[v].Count(); s++)//OrderProduct
+                        {
+                            if (Model.Item2[v][s].OrderId == Model.Item1[i].Id)
+                            {
+                                <p>@Model.Item2[v][s].Quantity.ToString()</p>
+                            }
+
+                        }
+                    }
+                </td>
+                <td style="width: 12.5%; height: 18px; text-align: center">@Model.Item1[i].Barista</td>
+                <td style="width: 12.5%; height: 18px; text-align: center">@Model.Item1[i].Status</td>
+                <td style="width: 12.5%; height: 18px; text-align: center">@Model.Item1[i].Date</td>
+            </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
